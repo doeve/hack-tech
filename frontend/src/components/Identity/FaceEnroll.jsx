@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react'
+﻿import { useRef, useState, useCallback } from 'react'
 import Webcam from 'react-webcam'
 import { useFaceAPI } from '../../hooks/useFaceAPI'
 import { useStore } from '../../store'
@@ -43,7 +43,7 @@ export default function FaceEnroll({ onComplete }) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 w-full max-w-sm aspect-[4/3]">
+      <div className="relative rounded-2xl overflow-hidden border-2 border-slate-200 w-full max-w-sm aspect-[4/3]">
         {status !== 'success' && (
           <Webcam
             ref={webcamRef}
@@ -64,20 +64,20 @@ export default function FaceEnroll({ onComplete }) {
           </div>
         )}
         {status === 'capturing' && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <div className="animate-spin w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full" />
+          <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center">
+            <div className="animate-spin w-8 h-8 border-2 border-[#1e3a8a] border-t-transparent rounded-full" />
           </div>
         )}
         {/* Face guide overlay */}
         {status === 'idle' && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-48 h-56 border-2 border-dashed border-blue-400/50 rounded-full" />
+            <div className="w-48 h-56 border-2 border-dashed border-[#1e3a8a]/50 rounded-full" />
           </div>
         )}
       </div>
 
       {!loaded && (
-        <p className="text-slate-400 text-sm">Loading face recognition models...</p>
+        <p className="text-slate-500 text-sm">Loading face recognition models...</p>
       )}
 
       {error && (
@@ -88,7 +88,7 @@ export default function FaceEnroll({ onComplete }) {
         <button
           onClick={handleCapture}
           disabled={!loaded || status === 'capturing'}
-          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700
+          className="px-6 py-2.5 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 disabled:bg-slate-100
                      disabled:text-slate-500 text-white rounded-xl font-medium
                      transition-colors"
         >
@@ -98,3 +98,5 @@ export default function FaceEnroll({ onComplete }) {
     </div>
   )
 }
+
+

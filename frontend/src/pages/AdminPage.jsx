@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+﻿import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, ImageOverlay, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
@@ -59,11 +59,11 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-full bg-[#0b1120] text-white">
+    <div className="min-h-full bg-slate-50 text-slate-900">
       {/* Header */}
-      <div className="bg-slate-800/50 border-b border-slate-700/50">
+      <div className="bg-white border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => navigate('/map')} className="text-slate-400 hover:text-white">
+          <button onClick={() => navigate('/map')} className="text-slate-500 hover:text-slate-900">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -74,7 +74,7 @@ export default function AdminPage() {
       </div>
 
       {/* Worker controls */}
-      <div className="bg-slate-800/30 border-b border-slate-700/30">
+      <div className="bg-white border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-3">
             <button
@@ -88,13 +88,13 @@ export default function AdminPage() {
               {worker.running ? 'Stop' : 'Start'} Worker
             </button>
 
-            <div className="flex items-center gap-1 bg-slate-800/60 rounded-lg border border-slate-700/50 p-0.5">
+            <div className="flex items-center gap-1 bg-white rounded-lg border border-slate-200 p-0.5">
               {[1, 2, 5, 10].map((s) => (
                 <button
                   key={s}
                   onClick={() => handleSpeed(s)}
                   className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
-                    worker.speed === s ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+                    worker.speed === s ? 'bg-[#1e3a8a] text-white' : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
                   {s}x
@@ -103,33 +103,33 @@ export default function AdminPage() {
             </div>
 
             <button onClick={handleReset}
-              className="px-3 py-1.5 text-xs text-slate-400 hover:text-white border border-slate-700/50 rounded-lg hover:bg-slate-800 transition-colors">
+              className="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-white transition-colors">
               Reset
             </button>
 
             <div className="flex-1" />
 
-            <div className="flex items-center gap-4 text-xs text-slate-400">
+            <div className="flex items-center gap-4 text-xs text-slate-500">
               <span className={`inline-flex items-center gap-1.5 ${worker.running ? 'text-green-400' : 'text-slate-500'}`}>
                 <span className={`w-2 h-2 rounded-full ${worker.running ? 'bg-green-400 animate-pulse' : 'bg-slate-600'}`} />
                 {worker.running ? 'Running' : 'Stopped'}
               </span>
-              <span>Tick: <span className="text-white font-mono">{worker.elapsed}</span></span>
-              <span>Flights: <span className="text-white font-mono">{stats.total}</span></span>
+              <span>Tick: <span className="text-slate-900 font-mono">{worker.elapsed}</span></span>
+              <span>Flights: <span className="text-slate-900 font-mono">{stats.total}</span></span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Tab bar */}
-      <div className="border-b border-slate-700/30">
+      <div className="border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 flex gap-1 pt-1">
           {TABS.map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                tab === t ? 'text-blue-400 border-blue-400' : 'text-slate-500 border-transparent hover:text-slate-300'
+                tab === t ? 'text-[#1e3a8a] border-[#1e3a8a]' : 'text-slate-500 border-transparent hover:text-slate-500'
               }`}
             >
               {t}
@@ -148,13 +148,13 @@ export default function AdminPage() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   Dashboard — flight stats + live flight table
-   ═══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Dashboard â€” flight stats + live flight table
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 const STATUS_BADGE = {
-  scheduled: 'bg-slate-500/20 text-slate-400',
-  boarding: 'bg-blue-500/20 text-blue-400',
+  scheduled: 'bg-slate-500/20 text-slate-500',
+  boarding: 'bg-[#1e3a8a]/20 text-[#1e3a8a]',
   final_call: 'bg-orange-500/20 text-orange-400',
   delayed: 'bg-red-500/20 text-red-400',
   departed: 'bg-green-500/20 text-green-400',
@@ -168,21 +168,21 @@ function DashboardTab({ stats, flights, formatTime }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 sm:grid-cols-7 gap-2">
-        <StatCard label="Total" value={stats.total} color="text-white" />
-        <StatCard label="Scheduled" value={stats.scheduled} color="text-slate-400" />
-        <StatCard label="Boarding" value={stats.boarding} color="text-blue-400" />
+        <StatCard label="Total" value={stats.total} color="text-slate-900" />
+        <StatCard label="Scheduled" value={stats.scheduled} color="text-slate-500" />
+        <StatCard label="Boarding" value={stats.boarding} color="text-[#1e3a8a]" />
         <StatCard label="Final Call" value={stats.final} color="text-orange-400" />
         <StatCard label="Delayed" value={stats.delayed} color="text-red-400" />
         <StatCard label="Departed" value={stats.departed} color="text-green-400" />
         <StatCard label="Cancelled" value={stats.cancelled} color="text-red-400" />
       </div>
 
-      <h3 className="text-xs font-bold text-slate-400 tracking-widest uppercase">Live Flights — click for ticket QR</h3>
-      <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl overflow-hidden">
+      <h3 className="text-xs font-bold text-slate-500 tracking-widest uppercase">Live Flights â€” click for ticket QR</h3>
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-700/30 text-[10px] text-slate-500 uppercase tracking-wider">
+              <tr className="border-b border-slate-200 text-[10px] text-slate-500 uppercase tracking-wider">
                 <th className="text-left px-4 py-2.5">Flight</th>
                 <th className="text-left px-3 py-2.5">Route</th>
                 <th className="text-left px-3 py-2.5">Status</th>
@@ -193,21 +193,21 @@ function DashboardTab({ stats, flights, formatTime }) {
             </thead>
             <tbody>
               {flights.length === 0 ? (
-                <tr><td colSpan={6} className="text-center py-8 text-slate-600">No flights — start the worker</td></tr>
+                <tr><td colSpan={6} className="text-center py-8 text-slate-600">No flights â€” start the worker</td></tr>
               ) : flights.map((f) => (
                 <tr key={f.id} onClick={() => setQrFlight(f)}
-                  className="border-b border-slate-700/20 hover:bg-slate-800/30 cursor-pointer">
-                  <td className="px-4 py-2 font-medium text-white whitespace-nowrap">{f.flight_number}</td>
-                  <td className="px-3 py-2 text-slate-400 text-xs">{f.origin_code || '?'} → {f.destination_code || '?'}</td>
+                  className="border-b border-slate-200 hover:bg-white cursor-pointer">
+                  <td className="px-4 py-2 font-medium text-slate-900 whitespace-nowrap">{f.flight_number}</td>
+                  <td className="px-3 py-2 text-slate-500 text-xs">{f.origin_code || '?'} â†’ {f.destination_code || '?'}</td>
                   <td className="px-3 py-2">
-                    <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md ${STATUS_BADGE[f.status] || 'bg-slate-700 text-slate-400'}`}>
+                    <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md ${STATUS_BADGE[f.status] || 'bg-slate-100 text-slate-500'}`}>
                       {f.status?.replace(/_/g, ' ')}
                     </span>
                   </td>
-                  <td className="px-3 py-2 text-slate-400">{f.gate || '-'}</td>
+                  <td className="px-3 py-2 text-slate-500">{f.gate || '-'}</td>
                   <td className="px-3 py-2 text-slate-500 text-xs font-mono">{formatTime(f.scheduled_at)}</td>
                   <td className="px-3 py-2 text-center">
-                    <span className="text-blue-400 text-xs">View</span>
+                    <span className="text-[#1e3a8a] text-xs">View</span>
                   </td>
                 </tr>
               ))}
@@ -237,9 +237,9 @@ function TicketQRModal({ flight, formatTime, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/80" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-900/80" onClick={onClose} />
       <div className="relative bg-white rounded-2xl w-full max-w-sm mx-4 p-6 text-center">
-        <button onClick={onClose} className="absolute top-3 right-3 text-slate-400 hover:text-slate-600">
+        <button onClick={onClose} className="absolute top-3 right-3 text-slate-500 hover:text-slate-600">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -248,7 +248,7 @@ function TicketQRModal({ flight, formatTime, onClose }) {
         <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Boarding Pass</p>
         <p className="text-2xl font-bold text-slate-900 mb-1">{flight.flight_number}</p>
         <p className="text-sm text-slate-500 mb-4">
-          {flight.origin_code || '?'} → {flight.destination_code || '?'}
+          {flight.origin_code || '?'} â†’ {flight.destination_code || '?'}
         </p>
 
         <div className="bg-slate-50 rounded-xl p-4 mb-4 inline-block">
@@ -257,20 +257,20 @@ function TicketQRModal({ flight, formatTime, onClose }) {
 
         <div className="grid grid-cols-3 gap-3 text-left mb-2">
           <div>
-            <p className="text-[10px] text-slate-400 uppercase font-semibold">Gate</p>
+            <p className="text-[10px] text-slate-500 uppercase font-semibold">Gate</p>
             <p className="text-sm font-bold text-slate-900">{flight.gate || '--'}</p>
           </div>
           <div>
-            <p className="text-[10px] text-slate-400 uppercase font-semibold">Terminal</p>
+            <p className="text-[10px] text-slate-500 uppercase font-semibold">Terminal</p>
             <p className="text-sm font-bold text-slate-900">{flight.terminal || '--'}</p>
           </div>
           <div>
-            <p className="text-[10px] text-slate-400 uppercase font-semibold">Time</p>
+            <p className="text-[10px] text-slate-500 uppercase font-semibold">Time</p>
             <p className="text-sm font-bold text-slate-900">{formatTime(flight.scheduled_at)}</p>
           </div>
         </div>
 
-        <p className="text-[10px] text-slate-400 mt-3">Scan this QR from the SkyGuide app to add to My Flights</p>
+        <p className="text-[10px] text-slate-500 mt-3">Scan this QR from the SkyGuide app to add to My Flights</p>
       </div>
     </div>
   )
@@ -278,16 +278,16 @@ function TicketQRModal({ flight, formatTime, onClose }) {
 
 function StatCard({ label, value, color }) {
   return (
-    <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl px-3 py-2.5 text-center">
+    <div className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-center">
       <p className={`text-xl font-bold ${color}`}>{value}</p>
       <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">{label}</p>
     </div>
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   Airport — map upload + interactive POI editor
-   ═══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Airport â€” map upload + interactive POI editor
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function AirportTab() {
   const { airport, pois, setPois, setAirport } = useStore()
@@ -369,12 +369,12 @@ function AirportTab() {
     <div className="space-y-4">
       {/* Map Upload */}
       <div className="flex items-center gap-3">
-        <h3 className="text-xs font-bold text-slate-400 tracking-widest uppercase">Floor Plan</h3>
+        <h3 className="text-xs font-bold text-slate-500 tracking-widest uppercase">Floor Plan</h3>
         <input ref={fileRef} type="file" accept="image/*,.svg" onChange={handleUpload} className="hidden" />
         <button
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
-          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white text-xs font-medium rounded-lg transition-colors"
+          className="px-3 py-1.5 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 disabled:bg-slate-100 text-white text-xs font-medium rounded-lg transition-colors"
         >
           {uploading ? 'Uploading...' : 'Upload Map'}
         </button>
@@ -388,14 +388,14 @@ function AirportTab() {
           <input
             value={addForm.name} onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
             placeholder="Gate B12"
-            className="px-2.5 py-1.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 w-36"
+            className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#1e3a8a]/30/50 w-36"
           />
         </div>
         <div>
           <label className="block text-[10px] text-slate-500 uppercase mb-0.5">Category</label>
           <select
             value={addForm.category_id} onChange={(e) => setAddForm({ ...addForm, category_id: +e.target.value })}
-            className="px-2.5 py-1.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+            className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#1e3a8a]/30/50"
           >
             {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.slug}</option>)}
           </select>
@@ -405,7 +405,7 @@ function AirportTab() {
           <input
             value={addForm.gate_number} onChange={(e) => setAddForm({ ...addForm, gate_number: e.target.value })}
             placeholder="B12"
-            className="px-2.5 py-1.5 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 w-20"
+            className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#1e3a8a]/30/50 w-20"
           />
         </div>
         <button
@@ -421,7 +421,7 @@ function AirportTab() {
       </div>
 
       {/* Interactive map */}
-      <div className="rounded-xl overflow-hidden border border-slate-700/30" style={{ height: '50vh' }}>
+      <div className="rounded-xl overflow-hidden border border-slate-200" style={{ height: '50vh' }}>
         <MapContainer
           key={floorPlanUrl}
           crs={L.CRS.Simple}
@@ -450,11 +450,11 @@ function AirportTab() {
       </div>
 
       {/* POI list */}
-      <div className="bg-slate-800/30 border border-slate-700/30 rounded-xl overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto max-h-60">
           <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-slate-800/90">
-              <tr className="border-b border-slate-700/30 text-[10px] text-slate-500 uppercase tracking-wider">
+            <thead className="sticky top-0 bg-white">
+              <tr className="border-b border-slate-200 text-[10px] text-slate-500 uppercase tracking-wider">
                 <th className="text-left px-4 py-2">Name</th>
                 <th className="text-left px-3 py-2">Cat</th>
                 <th className="text-left px-3 py-2">Gate</th>
@@ -464,8 +464,8 @@ function AirportTab() {
             </thead>
             <tbody>
               {pois.map((p) => (
-                <tr key={p.poi_id || p.id} className="border-b border-slate-700/20 hover:bg-slate-800/30">
-                  <td className="px-4 py-1.5 text-white text-xs">{p.name}</td>
+                <tr key={p.poi_id || p.id} className="border-b border-slate-200 hover:bg-white">
+                  <td className="px-4 py-1.5 text-slate-900 text-xs">{p.name}</td>
                   <td className="px-3 py-1.5 text-slate-500 text-xs">{p.category}</td>
                   <td className="px-3 py-1.5 text-slate-500 text-xs">{p.gate_number || '-'}</td>
                   <td className="px-3 py-1.5 text-slate-600 text-[10px] font-mono">{p.x_m?.toFixed(0)},{p.y_m?.toFixed(0)}</td>
@@ -535,7 +535,7 @@ function DraggablePoi({ poi, onDragEnd, onDelete }) {
       <Popup>
         <div className="text-xs space-y-1" style={{ color: '#e2e8f0', minWidth: 120 }}>
           <p className="font-bold">{poi.name}</p>
-          <p className="text-slate-400">{poi.category} {poi.gate_number ? `(${poi.gate_number})` : ''}</p>
+          <p className="text-slate-500">{poi.category} {poi.gate_number ? `(${poi.gate_number})` : ''}</p>
           <p className="text-slate-500">x:{poi.x_m?.toFixed(1)} y:{poi.y_m?.toFixed(1)}</p>
           <button
             onClick={() => onDelete(poi)}
@@ -549,9 +549,9 @@ function DraggablePoi({ poi, onDragEnd, onDelete }) {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    Notify Tab
-   ═══════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function NotifyTab({ flights }) {
   const [notifForm, setNotifForm] = useState({ title: '', body: '', priority: 'normal' })
@@ -584,27 +584,27 @@ function NotifyTab({ flights }) {
   return (
     <div className="space-y-6">
       {result && (
-        <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm px-4 py-2.5 rounded-xl flex items-center justify-between">
+        <div className="bg-[#1e3a8a]/10 border border-[#1e3a8a]/20 text-[#1e3a8a] text-sm px-4 py-2.5 rounded-xl flex items-center justify-between">
           <span>{result}</span>
-          <button onClick={() => setResult(null)} className="hover:text-white ml-2">&times;</button>
+          <button onClick={() => setResult(null)} className="hover:text-slate-900 ml-2">&times;</button>
         </div>
       )}
 
       <div>
-        <h3 className="text-xs font-bold text-slate-400 tracking-widest uppercase mb-3">Push Notification</h3>
-        <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4 space-y-3">
+        <h3 className="text-xs font-bold text-slate-500 tracking-widest uppercase mb-3">Push Notification</h3>
+        <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
           <input placeholder="Title" value={notifForm.title} onChange={(e) => setNotifForm({ ...notifForm, title: e.target.value })}
-            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50" />
+            className="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#1e3a8a]/30/50" />
           <textarea placeholder="Body" value={notifForm.body} onChange={(e) => setNotifForm({ ...notifForm, body: e.target.value })} rows={2}
-            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50 resize-none" />
+            className="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#1e3a8a]/30/50 resize-none" />
           <div className="flex items-center gap-3">
             <select value={notifForm.priority} onChange={(e) => setNotifForm({ ...notifForm, priority: e.target.value })}
-              className="px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-white focus:outline-none">
+              className="px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none">
               <option value="normal">Normal</option>
               <option value="high">High</option>
             </select>
             <button onClick={handleSendNotif} disabled={sending || !notifForm.title}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 text-white text-sm rounded-lg transition-colors">
+              className="px-4 py-2 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 disabled:bg-slate-100 text-white text-sm rounded-lg transition-colors">
               Send
             </button>
           </div>
@@ -612,19 +612,19 @@ function NotifyTab({ flights }) {
       </div>
 
       <div>
-        <h3 className="text-xs font-bold text-slate-400 tracking-widest uppercase mb-3">PA Announcement</h3>
-        <div className="bg-slate-800/40 border border-slate-700/30 rounded-xl p-4 space-y-3">
+        <h3 className="text-xs font-bold text-slate-500 tracking-widest uppercase mb-3">PA Announcement</h3>
+        <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
           <textarea placeholder="Announcement text..." value={announceText} onChange={(e) => setAnnounceText(e.target.value)} rows={2}
-            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50 resize-none" />
+            className="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#1e3a8a]/30/50 resize-none" />
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={handleAnnounce} disabled={sending || !announceText}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-slate-700 text-white text-sm rounded-lg transition-colors">
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-slate-100 text-slate-900 text-sm rounded-lg transition-colors">
               Broadcast
             </button>
             {boardingFlights.slice(0, 3).map((f) => (
               <button key={f.id}
-                onClick={() => setAnnounceText(`Attention passengers: Flight ${f.flight_number} is now boarding at Gate ${f.raw_source?.gate || '—'}. Please proceed with your boarding pass.`)}
-                className="px-2 py-1 text-[10px] bg-blue-500/10 text-blue-400 rounded-md hover:bg-blue-500/20">
+                onClick={() => setAnnounceText(`Attention passengers: Flight ${f.flight_number} is now boarding at Gate ${f.raw_source?.gate || 'â€”'}. Please proceed with your boarding pass.`)}
+                className="px-2 py-1 text-[10px] bg-[#1e3a8a]/10 text-[#1e3a8a] rounded-md hover:bg-[#1e3a8a]/90/20">
                 {f.flight_number}
               </button>
             ))}
@@ -634,3 +634,5 @@ function NotifyTab({ flights }) {
     </div>
   )
 }
+
+

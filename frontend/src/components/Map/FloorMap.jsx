@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+﻿import { useEffect, useMemo } from 'react'
 import { MapContainer, ImageOverlay, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { useStore } from '../../store'
@@ -66,3 +66,5 @@ export default function FloorMap({ onMapClick, onSelectDestination }) {
     </MapContainer>
   )
 }
+
+

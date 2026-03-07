@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+﻿import { useCallback } from 'react'
 import { useStore } from '../../store'
 
 /**
@@ -41,7 +41,7 @@ export default function HapticController() {
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">
+      <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
         Haptic Test
       </p>
       <div className="flex flex-wrap gap-2">
@@ -49,8 +49,8 @@ export default function HapticController() {
           <button
             key={type}
             onClick={() => vibrateForInstruction(type)}
-            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs
-                       text-white rounded-lg transition-colors"
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-600 text-xs
+                       text-slate-900 rounded-lg transition-colors"
           >
             {type.replace(/_/g, ' ')}
           </button>
@@ -59,3 +59,5 @@ export default function HapticController() {
     </div>
   )
 }
+
+

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
 import { updateAccessProfile } from '../api/client'
@@ -34,16 +34,16 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-full bg-[#0b1120] pb-24">
+    <div className="min-h-full bg-slate-50 pb-24">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-4 pb-3">
-        <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-white p-1">
+        <button onClick={() => navigate(-1)} className="text-slate-500 hover:text-slate-900 p-1">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-lg font-bold text-white">Profile</h1>
-        <button className="text-slate-400 hover:text-white p-1">
+        <h1 className="text-lg font-bold text-slate-900">Profile</h1>
+        <button className="text-slate-500 hover:text-slate-900 p-1">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -55,21 +55,21 @@ export default function ProfilePage() {
       {/* Avatar & Info */}
       <div className="flex flex-col items-center px-5 pt-4 pb-6">
         <div className="relative mb-4">
-          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-amber-700 to-amber-900 flex items-center justify-center overflow-hidden border-4 border-slate-700">
+          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-amber-700 to-amber-900 flex items-center justify-center overflow-hidden border-4 border-slate-200">
             <svg className="w-16 h-16 text-amber-200/60" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
             </svg>
           </div>
-          <span className="absolute bottom-1 right-1 w-5 h-5 bg-blue-500 rounded-full border-3 border-[#0b1120]" />
+          <span className="absolute bottom-1 right-1 w-5 h-5 bg-[#1e3a8a] rounded-full border-3 border-white" />
         </div>
-        <h2 className="text-xl font-bold text-white mb-1">{displayName}</h2>
-        <p className="text-sm text-slate-400 mb-5">Elite Voyager | SkyGuide Member</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{displayName}</h2>
+        <p className="text-sm text-slate-500 mb-5">Elite Voyager | SkyGuide Member</p>
 
         <div className="flex gap-3 w-full max-w-xs">
-          <button className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl transition-colors">
+          <button className="flex-1 py-2.5 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white text-sm font-medium rounded-xl transition-colors">
             Edit Profile
           </button>
-          <button className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-xl border border-slate-700 transition-colors">
+          <button className="flex-1 py-2.5 bg-white hover:bg-slate-100 text-slate-900 text-sm font-medium rounded-xl border border-slate-200 transition-colors">
             Stats
           </button>
         </div>
@@ -77,7 +77,7 @@ export default function ProfilePage() {
 
       {/* Accessibility Settings */}
       <div className="px-5 mb-6">
-        <h3 className="text-xs font-bold text-slate-400 tracking-widest uppercase mb-4">
+        <h3 className="text-xs font-bold text-slate-500 tracking-widest uppercase mb-4">
           Accessibility Settings
         </h3>
 
@@ -139,7 +139,7 @@ export default function ProfilePage() {
 
       {/* Account */}
       <div className="px-5 mb-6">
-        <h3 className="text-xs font-bold text-slate-400 tracking-widest uppercase mb-4">
+        <h3 className="text-xs font-bold text-slate-500 tracking-widest uppercase mb-4">
           Account
         </h3>
 
@@ -200,7 +200,7 @@ export default function ProfilePage() {
 
       {/* Version */}
       <p className="text-center text-xs text-slate-600 pb-4">
-        SkyGuide v2.4.1 — Elite Voyager Edition
+        SkyGuide v2.4.1 â€” Elite Voyager Edition
       </p>
 
       <BottomNav />
@@ -211,15 +211,15 @@ export default function ProfilePage() {
 function ToggleRow({ icon, label, subtitle, checked, onChange }) {
   return (
     <div className="flex items-center gap-3 py-3 px-1">
-      <span className="text-slate-400 flex-shrink-0">{icon}</span>
+      <span className="text-slate-500 flex-shrink-0">{icon}</span>
       <div className="flex-1 min-w-0">
-        <p className="text-sm text-white font-medium">{label}</p>
+        <p className="text-sm text-slate-900 font-medium">{label}</p>
         {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
       </div>
       <button
         onClick={onChange}
         className={`w-11 h-6 rounded-full transition-colors relative flex-shrink-0 ${
-          checked ? 'bg-blue-500' : 'bg-slate-600'
+          checked ? 'bg-[#1e3a8a]' : 'bg-slate-600'
         }`}
       >
         <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${
@@ -234,13 +234,15 @@ function AccountRow({ icon, label, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-3 py-3.5 px-1 w-full hover:bg-slate-800/40 rounded-lg transition-colors"
+      className="flex items-center gap-3 py-3.5 px-1 w-full hover:bg-white rounded-lg transition-colors"
     >
-      <span className="text-slate-400 flex-shrink-0">{icon}</span>
-      <span className="text-sm text-white font-medium flex-1 text-left">{label}</span>
+      <span className="text-slate-500 flex-shrink-0">{icon}</span>
+      <span className="text-sm text-slate-900 font-medium flex-1 text-left">{label}</span>
       <svg className="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
     </button>
   )
 }
+
+

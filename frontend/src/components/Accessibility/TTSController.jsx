@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+﻿import { useCallback } from 'react'
 import { useStore } from '../../store'
 
 /**
@@ -40,21 +40,21 @@ export default function TTSController() {
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">
+      <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
         TTS Test
       </p>
       <div className="flex gap-2">
         <button
           onClick={() => speak('Continue straight for 50 metres')}
-          className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs
-                     text-white rounded-lg transition-colors"
+          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-600 text-xs
+                     text-slate-900 rounded-lg transition-colors"
         >
           Test Speech
         </button>
         <button
           onClick={stop}
-          className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs
-                     text-white rounded-lg transition-colors"
+          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-600 text-xs
+                     text-slate-900 rounded-lg transition-colors"
         >
           Stop
         </button>
@@ -62,3 +62,5 @@ export default function TTSController() {
     </div>
   )
 }
+
+

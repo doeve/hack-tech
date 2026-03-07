@@ -4,21 +4,23 @@ html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: #f8fafc; /* slate-50 */
 }
 
-/* Leaflet overrides for dark theme */
+/* Leaflet overrides for light theme */
 .leaflet-container {
-  background: #0b1120;
+  background: #f8fafc;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #1e293b;
-  color: #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
   border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .leaflet-popup-tip {
-  background: #1e293b;
+  background: #ffffff;
 }
 
 /* Hide default leaflet zoom controls (we use custom ones) */
@@ -53,7 +55,7 @@ html, body, #root {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 2px;
 }
 
@@ -62,7 +64,7 @@ input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 2px;
   outline: none;
 }
@@ -73,18 +75,18 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #1e3a8a;
   cursor: pointer;
-  border: 2px solid #0b1120;
+  border: 2px solid #f8fafc;
 }
 
 input[type="range"]::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #1e3a8a;
   cursor: pointer;
-  border: 2px solid #0b1120;
+  border: 2px solid #f8fafc;
 }
 
 /* Smooth page transitions */

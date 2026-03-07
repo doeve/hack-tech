@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+﻿import { useEffect } from 'react'
 import { useStore } from '../../store'
 
 const INSTRUCTION_ICONS = {
@@ -68,16 +68,16 @@ export default function InstructionBanner() {
   const isLast = currentStepIndex >= route.instructions.length - 1
 
   return (
-    <div className="bg-slate-800/95 backdrop-blur-sm rounded-2xl px-4 py-3
-                    border border-slate-700/50 shadow-xl flex items-center gap-4">
-      <div className={`flex-shrink-0 p-2 rounded-xl ${isLast ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
+    <div className="bg-white backdrop-blur-sm rounded-2xl px-4 py-3
+                    border border-slate-200 shadow-xl flex items-center gap-4">
+      <div className={`flex-shrink-0 p-2 rounded-xl ${isLast ? 'bg-green-500/20 text-green-400' : 'bg-[#1e3a8a]/20 text-[#1e3a8a]'}`}>
         {isLast ? INSTRUCTION_ICONS.arrive : icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-white text-sm font-medium truncate">
+        <p className="text-slate-900 text-sm font-medium truncate">
           {instruction.display_text || instruction.tts_text || 'Continue ahead'}
         </p>
-        <p className="text-slate-400 text-xs mt-0.5">
+        <p className="text-slate-500 text-xs mt-0.5">
           {instruction.distance_m != null ? `${Math.round(instruction.distance_m)} m` : ''}
           {instruction.bearing_deg != null ? ` | ${Math.round(instruction.bearing_deg)}deg` : ''}
         </p>
@@ -88,3 +88,5 @@ export default function InstructionBanner() {
     </div>
   )
 }
+
+

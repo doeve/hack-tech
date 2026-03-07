@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { DemoCard } from './DemoShared'
 import FaceVerify from '../../components/Identity/FaceVerify'
 import TokenCard from '../../components/Identity/TokenCard'
@@ -27,8 +27,8 @@ export default function DemoVerifyCard({ verificationToken }) {
 
           <button
             onClick={() => setShowGateVerify(!showGateVerify)}
-            className="w-full py-2 bg-blue-600/20 border border-blue-700 text-blue-400
-                       rounded-lg text-sm font-medium hover:bg-blue-600/30 transition-colors"
+            className="w-full py-2 bg-[#1e3a8a] border border-blue-700 text-[#1e3a8a]
+                       rounded-lg text-sm font-medium hover:bg-[#1e3a8a] transition-colors"
           >
             Board at Gate B7
           </button>
@@ -44,9 +44,9 @@ export default function DemoVerifyCard({ verificationToken }) {
       <DemoCard title="Token & Claims">
         <TokenCard />
         {verificationToken?.claims && (
-          <div className="mt-3 p-2 bg-slate-900 rounded-lg">
+          <div className="mt-3 p-2 bg-white rounded-lg">
             <p className="text-xs text-slate-500 mb-1">Raw Claims JSON</p>
-            <pre className="text-xs text-slate-300 font-mono overflow-x-auto">
+            <pre className="text-xs text-slate-500 font-mono overflow-x-auto">
               {JSON.stringify(verificationToken.claims, null, 2)}
             </pre>
           </div>
@@ -55,3 +55,5 @@ export default function DemoVerifyCard({ verificationToken }) {
     </>
   )
 }
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+﻿import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
 import {
@@ -111,11 +111,11 @@ export default function MapPage() {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-[#0b1120]">
+      <div className="h-full flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="animate-spin w-10 h-10 border-3 border-blue-400
+          <div className="animate-spin w-10 h-10 border-3 border-[#1e3a8a]
                           border-t-transparent rounded-full mx-auto mb-3" />
-          <p className="text-slate-400 text-sm">Loading airport...</p>
+          <p className="text-slate-500 text-sm">Loading airport...</p>
         </div>
       </div>
     )
@@ -123,11 +123,11 @@ export default function MapPage() {
 
   if (error) {
     return (
-      <div className="h-full flex items-center justify-center bg-[#0b1120] p-4">
+      <div className="h-full flex items-center justify-center bg-slate-50 p-4">
         <div className="text-center">
           <p className="text-red-400 mb-2">{error}</p>
           <button onClick={() => window.location.reload()}
-            className="text-blue-400 text-sm hover:text-blue-300">Retry</button>
+            className="text-[#1e3a8a] text-sm hover:text-blue-300">Retry</button>
         </div>
       </div>
     )
@@ -141,14 +141,14 @@ export default function MapPage() {
   ) : null
 
   return (
-    <div className="relative h-full w-full bg-[#0b1120]">
+    <div className="relative h-full w-full bg-slate-50">
       {/* Map */}
       <FloorMap onMapClick={handleMapClick} onSelectDestination={handleSelectDestination} />
 
       {/* Search Bar Overlay */}
       <div className="absolute top-4 left-4 right-4 z-[1000]">
-        <div className="flex items-center gap-2 bg-slate-800/90 backdrop-blur-md rounded-2xl border border-slate-700/50 px-4 py-2.5">
-          <svg className="w-4.5 h-4.5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="flex items-center gap-2 bg-white backdrop-blur-md rounded-2xl border border-slate-200 px-4 py-2.5">
+          <svg className="w-4.5 h-4.5 text-slate-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -158,15 +158,15 @@ export default function MapPage() {
             onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true) }}
             onFocus={() => setSearchOpen(true)}
             placeholder="Search Gates, Lounges, or..."
-            className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-slate-900 placeholder-slate-500 focus:outline-none"
           />
-          <button className="text-slate-400 hover:text-white p-0.5">
+          <button className="text-slate-500 hover:text-slate-900 p-0.5">
             <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m-4-4h8m-4-12a3 3 0 00-3 3v4a3 3 0 006 0V8a3 3 0 00-3-3z" />
             </svg>
           </button>
-          <button className="relative text-slate-400 hover:text-white p-0.5">
+          <button className="relative text-slate-500 hover:text-slate-900 p-0.5">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -177,17 +177,17 @@ export default function MapPage() {
 
         {/* Search Results Dropdown */}
         {searchOpen && filteredPois.length > 0 && (
-          <div className="mt-2 bg-slate-800/95 backdrop-blur-md border border-slate-700/50 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
+          <div className="mt-2 bg-white backdrop-blur-md border border-slate-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
             {filteredPois.map((poi) => (
               <button
                 key={poi.poi_id || poi.id}
                 onClick={() => handlePoiSelect(poi)}
-                className="w-full px-4 py-3 text-left hover:bg-slate-700/50 flex items-center gap-3 border-b border-slate-700/30 last:border-b-0"
+                className="w-full px-4 py-3 text-left hover:bg-slate-100 flex items-center gap-3 border-b border-slate-200 last:border-b-0"
               >
                 <span className="text-[10px] uppercase tracking-wider text-slate-500 w-14">{poi.category}</span>
-                <span className="text-sm text-white flex-1">{poi.name}</span>
+                <span className="text-sm text-slate-900 flex-1">{poi.name}</span>
                 {poi.gate_number && (
-                  <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">{poi.gate_number}</span>
+                  <span className="text-xs bg-[#1e3a8a]/20 text-[#1e3a8a] px-2 py-0.5 rounded">{poi.gate_number}</span>
                 )}
               </button>
             ))}
@@ -203,8 +203,8 @@ export default function MapPage() {
             onClick={() => setFloor(lvl)}
             className={`w-9 h-9 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
               floor === lvl
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-800/80 text-slate-400 hover:bg-slate-700/80 border border-slate-700/50'
+                ? 'bg-[#1e3a8a] text-white shadow-lg shadow-blue-900/30'
+                : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             {lvl}
@@ -214,13 +214,13 @@ export default function MapPage() {
 
       {/* Zoom Controls */}
       <div className="absolute right-4 z-[1000] flex flex-col gap-1.5" style={{ top: '220px' }}>
-        <button className="w-9 h-9 bg-slate-800/80 backdrop-blur border border-slate-700/50 rounded-lg flex items-center justify-center text-white text-lg hover:bg-slate-700/80 transition-colors">
+        <button className="w-9 h-9 bg-white backdrop-blur border border-slate-200 rounded-lg flex items-center justify-center text-slate-900 text-lg hover:bg-slate-100 transition-colors">
           +
         </button>
-        <button className="w-9 h-9 bg-slate-800/80 backdrop-blur border border-slate-700/50 rounded-lg flex items-center justify-center text-white text-lg hover:bg-slate-700/80 transition-colors">
+        <button className="w-9 h-9 bg-white backdrop-blur border border-slate-200 rounded-lg flex items-center justify-center text-slate-900 text-lg hover:bg-slate-100 transition-colors">
           -
         </button>
-        <button className="w-9 h-9 bg-slate-800/80 backdrop-blur border border-slate-700/50 rounded-lg flex items-center justify-center text-blue-400 hover:bg-slate-700/80 transition-colors mt-1">
+        <button className="w-9 h-9 bg-white backdrop-blur border border-slate-200 rounded-lg flex items-center justify-center text-[#1e3a8a] hover:bg-slate-100 transition-colors mt-1">
           <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -232,7 +232,7 @@ export default function MapPage() {
       <div className="absolute bottom-40 left-4 z-[1000]">
         <button
           onClick={() => navigate('/ar')}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-full shadow-lg shadow-blue-600/30 transition-colors"
+          className="flex items-center gap-2 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 text-white px-5 py-2.5 rounded-full shadow-lg shadow-blue-900/30 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -244,29 +244,29 @@ export default function MapPage() {
 
       {/* User Location Dot Indicator */}
       <div className="absolute bottom-40 left-5 z-[999]" style={{ display: 'none' }}>
-        <div className="w-3 h-3 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50" />
+        <div className="w-3 h-3 bg-[#1e3a8a] rounded-full shadow-lg shadow-blue-500/50" />
       </div>
 
       {/* Next Step Card */}
       {route && currentInstruction && (
         <div className="absolute bottom-24 left-4 right-4 z-[1000]">
-          <div className="bg-slate-800/95 backdrop-blur-md rounded-2xl border border-slate-700/30 px-4 py-3 shadow-xl">
+          <div className="bg-white backdrop-blur-md rounded-2xl border border-slate-200 px-4 py-3 shadow-xl">
             <p className="text-[10px] text-slate-500 font-semibold tracking-widest uppercase mb-1">Next Step</p>
             <div className="flex items-center gap-3">
-              <div className="flex-shrink-0 w-10 h-10 bg-blue-500/15 rounded-xl flex items-center justify-center text-blue-400">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#1e3a8a]/15 rounded-xl flex items-center justify-center text-[#1e3a8a]">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white text-sm font-medium truncate">
+                <p className="text-slate-900 text-sm font-medium truncate">
                   {currentInstruction.display_text || currentInstruction.tts_text || 'Continue ahead'}
                 </p>
               </div>
               {remainingMins != null && remainingMins > 0 && (
                 <div className="text-right flex-shrink-0">
-                  <p className="text-blue-400 text-xl font-bold leading-none">{remainingMins}</p>
-                  <p className="text-blue-400 text-xs">mins</p>
+                  <p className="text-[#1e3a8a] text-xl font-bold leading-none">{remainingMins}</p>
+                  <p className="text-[#1e3a8a] text-xs">mins</p>
                 </div>
               )}
             </div>
@@ -285,3 +285,5 @@ export default function MapPage() {
     </div>
   )
 }
+
+

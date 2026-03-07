@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom'
+﻿import { useNavigate, useLocation } from 'react-router-dom'
 
 const tabs = [
   {
@@ -56,7 +56,7 @@ export default function BottomNav() {
   const { pathname } = useLocation()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-[#0b1120]/95 backdrop-blur-lg border-t border-slate-700/50 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-slate-50 backdrop-blur-lg border-t border-slate-200 z-50">
       <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-2">
         {tabs.map((tab) => {
           const active = pathname.startsWith(tab.path)
@@ -66,12 +66,12 @@ export default function BottomNav() {
               key={tab.path}
               onClick={() => navigate(tab.path)}
               className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-lg transition-colors ${
-                active ? 'text-blue-400' : 'text-slate-500 hover:text-slate-400'
+                active ? 'text-[#1e3a8a]' : 'text-slate-500 hover:text-slate-500'
               }`}
             >
               <Icon className="w-5 h-5" />
               <span className={`text-[10px] font-semibold tracking-wide uppercase ${
-                active ? 'text-blue-400' : ''
+                active ? 'text-[#1e3a8a]' : ''
               }`}>{tab.label}</span>
             </button>
           )
@@ -82,3 +82,5 @@ export default function BottomNav() {
     </nav>
   )
 }
+
+
