@@ -5,7 +5,7 @@
 # Starts:
 #   1. PostgreSQL (docker compose)
 #   2. FastAPI backend with --reload (port 8000)
-#   3. Vite dev server (port 5173, proxies /api + /ws to 8000)
+#   3. Vite dev server with HTTPS (port 5173, proxies /api + /ws to 8000)
 #
 # Press Ctrl+C to stop all services.
 
@@ -86,7 +86,7 @@ cd "$PROJECT_DIR"
 
 echo ""
 log "All services running:"
-log "  Frontend:  http://localhost:5173"
+log "  Frontend:  https://localhost:5173  (self-signed cert — accept the browser warning)"
 log "  Backend:   http://localhost:8000"
 log "  Swagger:   http://localhost:8000/docs"
 log "  Postgres:  localhost:5432"
