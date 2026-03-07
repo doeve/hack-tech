@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4000 2000" width="4000" height="2000">
+  <defs>
+    <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#334155" stroke-width="0.5"/>
+    </pattern>
+    <style>
+      .zone-label { font: bold 28px sans-serif; fill: #94a3b8; }
+      .poi-label  { font: 20px sans-serif; fill: #cbd5e1; }
+      .gate-label { font: bold 24px sans-serif; fill: #38bdf8; }
+      .wall       { stroke: #64748b; stroke-width: 4; fill: none; }
+      .zone-fill  { fill-opacity: 0.15; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="4000" height="2000" fill="#0f172a"/>
+  <rect width="4000" height="2000" fill="url(#grid)"/>
+
+  <!-- Building outline -->
+  <rect x="20" y="20" width="3960" height="1960" rx="20" class="wall" stroke-width="6"/>
+
+  <!-- PUBLIC ZONE (x: 0-1100, y: 0-2000) -->
+  <rect x="30" y="30" width="1070" height="1940" rx="10" class="zone-fill" fill="#3b82f6" stroke="#3b82f6"/>
+  <text x="400" y="180" class="zone-label">PUBLIC ZONE</text>
+
+  <!-- Entrance -->
+  <rect x="30" y="800" width="80" height="400" fill="#22c55e" fill-opacity="0.3" stroke="#22c55e" stroke-width="3" rx="5"/>
+  <text x="48" y="1020" class="poi-label" transform="rotate(-90,48,1020)">ENTRANCE</text>
+
+  <!-- Check-in Zone A (POI at x=50m, y=30m -> px 500, 300) -->
+  <rect x="300" y="150" width="400" height="250" fill="#8b5cf6" fill-opacity="0.2" stroke="#8b5cf6" stroke-width="2" rx="8"/>
+  <text x="380" y="290" class="poi-label" fill="#a78bfa">CHECK-IN ZONE A</text>
+  <!-- Check-in counters -->
+  <rect x="340" y="200" width="320" height="20" fill="#6d28d9" fill-opacity="0.5" rx="3"/>
+  <rect x="340" y="240" width="320" height="20" fill="#6d28d9" fill-opacity="0.5" rx="3"/>
+  <rect x="340" y="280" width="320" height="20" fill="#6d28d9" fill-opacity="0.5" rx="3"/>
+  <rect x="340" y="320" width="320" height="20" fill="#6d28d9" fill-opacity="0.5" rx="3"/>
+
+  <!-- Information Desk -->
+  <rect x="350" y="500" width="200" height="120" fill="#f59e0b" fill-opacity="0.2" stroke="#f59e0b" stroke-width="2" rx="8"/>
+  <text x="380" y="570" class="poi-label" fill="#fbbf24">INFO DESK</text>
+
+  <!-- SECURITY CHECKPOINT (POI at x=110m, y=30m -> px 1100, 300) -->
+  <rect x="950" y="100" width="200" height="500" fill="#ef4444" fill-opacity="0.15" stroke="#ef4444" stroke-width="3" rx="8"/>
+  <text x="970" y="370" class="poi-label" fill="#f87171">SECURITY</text>
+  <!-- Security lanes -->
+  <line x1="970" y1="200" x2="1130" y2="200" stroke="#ef4444" stroke-width="2" stroke-dasharray="8,4"/>
+  <line x1="970" y1="280" x2="1130" y2="280" stroke="#ef4444" stroke-width="2" stroke-dasharray="8,4"/>
+  <line x1="970" y1="360" x2="1130" y2="360" stroke="#ef4444" stroke-width="2" stroke-dasharray="8,4"/>
+  <line x1="970" y1="440" x2="1130" y2="440" stroke="#ef4444" stroke-width="2" stroke-dasharray="8,4"/>
+
+  <!-- POST-SECURITY CORRIDOR (x: 1100-4000, y: 0-2000) -->
+  <rect x="1100" y="30" width="2850" height="1940" rx="10" class="zone-fill" fill="#06b6d4" stroke="#06b6d4"/>
+  <text x="1700" y="180" class="zone-label">POST-SECURITY CORRIDOR</text>
+
+  <!-- Restroom (POI at x=180m, y=20m -> px 1800, 200) -->
+  <rect x="1700" y="100" width="200" height="150" fill="#64748b" fill-opacity="0.3" stroke="#64748b" stroke-width="2" rx="8"/>
+  <text x="1740" y="190" class="poi-label">RESTROOM</text>
+
+  <!-- Food Court (POI at x=160m, y=120m -> px 1600, 1200) -->
+  <rect x="1400" y="1050" width="400" height="300" fill="#f97316" fill-opacity="0.2" stroke="#f97316" stroke-width="2" rx="8"/>
+  <text x="1500" y="1220" class="zone-label" fill="#fb923c">FOOD COURT</text>
+  <!-- Tables -->
+  <circle cx="1500" cy="1150" r="25" fill="#f97316" fill-opacity="0.3"/>
+  <circle cx="1580" cy="1150" r="25" fill="#f97316" fill-opacity="0.3"/>
+  <circle cx="1660" cy="1150" r="25" fill="#f97316" fill-opacity="0.3"/>
+  <circle cx="1500" cy="1250" r="25" fill="#f97316" fill-opacity="0.3"/>
+  <circle cx="1580" cy="1250" r="25" fill="#f97316" fill-opacity="0.3"/>
+  <circle cx="1660" cy="1250" r="25" fill="#f97316" fill-opacity="0.3"/>
+
+  <!-- Charging Station (POI at x=200m, y=90m -> px 2000, 900) -->
+  <rect x="1900" y="800" width="200" height="120" fill="#a3e635" fill-opacity="0.2" stroke="#a3e635" stroke-width="2" rx="8"/>
+  <text x="1920" y="875" class="poi-label" fill="#a3e635">CHARGING</text>
+  <!-- Charging icon -->
+  <path d="M1990 840 L2010 870 L1998 870 L2010 900 L1980 862 L1995 862 Z" fill="#a3e635" fill-opacity="0.6"/>
+
+  <!-- GATE B CONCOURSE (x: 2000-3800, y: 600-1500) -->
+  <rect x="2000" y="600" width="1800" height="900" rx="15" class="zone-fill" fill="#38bdf8" stroke="#38bdf8" stroke-width="3"/>
+  <text x="2700" y="750" class="zone-label" fill="#38bdf8">GATE B CONCOURSE</text>
+
+  <!-- Main concourse corridor -->
+  <rect x="2000" y="900" width="1800" height="200" fill="#1e3a5f" fill-opacity="0.4" rx="5"/>
+
+  <!-- Gate B7 (POI at x=280m, y=100m -> px 2800, 1000) -->
+  <rect x="2650" y="650" width="250" height="250" fill="#38bdf8" fill-opacity="0.15" stroke="#38bdf8" stroke-width="3" rx="10"/>
+  <text x="2720" y="790" class="gate-label">GATE B7</text>
+  <!-- Gate desk -->
+  <rect x="2690" y="820" width="170" height="25" fill="#0ea5e9" fill-opacity="0.5" rx="4"/>
+  <!-- Seating rows -->
+  <rect x="2680" y="700" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="2740" y="700" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="2800" y="700" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="2680" y="720" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="2740" y="720" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="2800" y="720" width="50" height="8" fill="#475569" rx="2"/>
+
+  <!-- Gate B12 (POI at x=340m, y=100m -> px 3400, 1000) -->
+  <rect x="3250" y="650" width="250" height="250" fill="#38bdf8" fill-opacity="0.15" stroke="#38bdf8" stroke-width="3" rx="10"/>
+  <text x="3310" y="790" class="gate-label">GATE B12</text>
+  <!-- Gate desk -->
+  <rect x="3290" y="820" width="170" height="25" fill="#0ea5e9" fill-opacity="0.5" rx="4"/>
+  <!-- Seating rows -->
+  <rect x="3280" y="700" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="3340" y="700" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="3400" y="700" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="3280" y="720" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="3340" y="720" width="50" height="8" fill="#475569" rx="2"/>
+  <rect x="3400" y="720" width="50" height="8" fill="#475569" rx="2"/>
+
+  <!-- Nav path indicators (subtle walkway) -->
+  <path d="M 200,300 L 500,350 L 850,300 L 1100,350 L 1450,600 L 1950,1000 L 2780,1000 L 3380,1000"
+        fill="none" stroke="#475569" stroke-width="3" stroke-dasharray="12,6" opacity="0.4"/>
+
+  <!-- Nav nodes (small dots for reference) -->
+  <circle cx="200"  cy="300"  r="6" fill="#38bdf8" opacity="0.4"/>
+  <circle cx="500"  cy="350"  r="6" fill="#38bdf8" opacity="0.4"/>
+  <circle cx="850"  cy="300"  r="6" fill="#38bdf8" opacity="0.4"/>
+  <circle cx="1100" cy="350"  r="6" fill="#38bdf8" opacity="0.4"/>
+  <circle cx="1450" cy="600"  r="6" fill="#38bdf8" opacity="0.4"/>
+  <circle cx="1950" cy="1000" r="6" fill="#38bdf8" opacity="0.4"/>
+  <circle cx="2780" cy="1000" r="6" fill="#38bdf8" opacity="0.4"/>
+  <circle cx="3380" cy="1000" r="6" fill="#38bdf8" opacity="0.4"/>
+
+  <!-- Compass rose -->
+  <g transform="translate(3800,200)">
+    <circle cx="0" cy="0" r="60" fill="none" stroke="#64748b" stroke-width="2"/>
+    <text x="-8" y="-70" class="poi-label" fill="#94a3b8">N</text>
+    <text x="-8" y="90" class="poi-label" fill="#94a3b8">S</text>
+    <text x="70" y="6" class="poi-label" fill="#94a3b8">E</text>
+    <text x="-85" y="6" class="poi-label" fill="#94a3b8">W</text>
+    <polygon points="0,-50 -8,-20 8,-20" fill="#ef4444"/>
+    <polygon points="0,50 -8,20 8,20" fill="#94a3b8"/>
+  </g>
+
+  <!-- Scale bar -->
+  <g transform="translate(100,1850)">
+    <line x1="0" y1="0" x2="500" y2="0" stroke="#94a3b8" stroke-width="3"/>
+    <line x1="0" y1="-10" x2="0" y2="10" stroke="#94a3b8" stroke-width="3"/>
+    <line x1="500" y1="-10" x2="500" y2="10" stroke="#94a3b8" stroke-width="3"/>
+    <text x="200" y="30" class="poi-label" fill="#94a3b8">50 metres</text>
+  </g>
+</svg>
