@@ -26,21 +26,26 @@ export function useStylizedSvg(url) {
           !text.includes('fill-opacity') &&
           (text.match(/<path[\s>]/g) || []).length > 0
 
-        // Parse walls from any SVG with paths
+        // Parse walls from any SVG with paths — store in normalized 0..1 coords
+        // (y-flipped to match map coordinate system). Converted to map metres at use time.
         const { walls, svgW, svgH } = parseSvgWalls(text)
-        const airport = useStore.getState().airport
-        if (airport && walls.length > 0) {
-          const mapWalls = walls.map((seg) => ({
-            x1: (seg.x1 / svgW) * airport.width_m,
-            y1: airport.height_m - (seg.y1 / svgH) * airport.height_m,
-            x2: (seg.x2 / svgW) * airport.width_m,
-            y2: airport.height_m - (seg.y2 / svgH) * airport.height_m,
+        // Store SVG dimensions so FloorMap can compute aspect-correct bounds
+        useStore.getState().setFloorSvgDims({ w: svgW, h: svgH })
+        if (walls.length > 0) {
+          const normWalls = walls.map((seg) => ({
+            x1: seg.x1 / svgW,
+            y1: 1 - seg.y1 / svgH,
+            x2: seg.x2 / svgW,
+            y2: 1 - seg.y2 / svgH,
           }))
-          useStore.getState().setFloorWalls(mapWalls)
+          useStore.getState().setFloorWalls(normWalls)
         }
 
         if (!isSimpleLine) {
-          setStyledUrl(url)
+          // Convert to data URL for reliable loading
+          const fixDoc = new DOMParser().parseFromString(text, 'image/svg+xml')
+          const fixedUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(fixDoc))
+          setStyledUrl(fixedUrl)
           return
         }
 
@@ -344,7 +349,7 @@ function stylizeSvg(raw) {
   svg.appendChild(shadow)
   svg.appendChild(mainGroup)
 
-  // Fix dimensions
+  // Fix dimensions (aspect ratio preserved by ImageOverlay bounds matching SVG ratio)
   svg.setAttribute('width', String(vbW))
   svg.setAttribute('height', String(vbH))
 

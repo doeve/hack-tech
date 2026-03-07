@@ -76,14 +76,36 @@ class MinHeap {
   }
 }
 
+// Compute image bounds that preserve SVG aspect ratio, fitted within airport bounds
+function computeFloorBounds(airport, svgDims) {
+  const W = airport.width_m, H = airport.height_m
+  if (!svgDims) return { x0: 0, y0: 0, w: W, h: H }
+  const svgAspect = svgDims.w / svgDims.h
+  const mapAspect = W / H
+  if (svgAspect >= mapAspect) {
+    const imgH = W / svgAspect
+    return { x0: 0, y0: (H - imgH) / 2, w: W, h: imgH }
+  }
+  const imgW = H * svgAspect
+  return { x0: (W - imgW) / 2, y0: 0, w: imgW, h: H }
+}
+
 // ── Grid-based A* pathfinding (wall-aware) ───────────────────────
 function clientAStar(fromPos, toPoi, pois, airport, walls) {
   if (!airport) return null
   const W = airport.width_m, H = airport.height_m
   const destX = toPoi.x_m, destY = toPoi.y_m
 
+  // Convert normalized walls (0..1) to map coordinates using fitted image bounds
+  const svgDims = useStore.getState().floorSvgDims
+  const fb = computeFloorBounds(airport, svgDims)
+  const mapWalls = (walls || []).map((w) => ({
+    x1: fb.x0 + w.x1 * fb.w, y1: fb.y0 + w.y1 * fb.h,
+    x2: fb.x0 + w.x2 * fb.w, y2: fb.y0 + w.y2 * fb.h,
+  }))
+
   // No walls — direct line
-  if (!walls || walls.length === 0) {
+  if (mapWalls.length === 0) {
     const dist = Math.sqrt((destX - fromPos.x_m) ** 2 + (destY - fromPos.y_m) ** 2)
     const coords = [
       { id: '__start__', x_m: fromPos.x_m, y_m: fromPos.y_m },
@@ -153,19 +175,21 @@ function clientAStar(fromPos, toPoi, pois, airport, walls) {
       // Convert to world coordinates
       const worldPath = gridPath.map(([gc, gr]) => toWorld(gc, gr))
 
-      // Smooth: skip intermediate waypoints that have line-of-sight
+      // Simplify: keep only turning points (where direction changes).
+      // This is safe because the grid path already respects walls.
       const smoothed = [worldPath[0]]
-      let i = 0
-      while (i < worldPath.length - 1) {
-        let farthest = i + 1
-        for (let j = i + 2; j < worldPath.length; j++) {
-          if (!crossesWall(worldPath[i][0], worldPath[i][1], worldPath[j][0], worldPath[j][1], walls)) {
-            farthest = j
-          }
+      for (let i = 1; i < worldPath.length - 1; i++) {
+        const [px, py] = worldPath[i - 1]
+        const [cx, cy] = worldPath[i]
+        const [nx, ny] = worldPath[i + 1]
+        const dx1 = cx - px, dy1 = cy - py
+        const dx2 = nx - cx, dy2 = ny - cy
+        // Keep point if direction changes (cross product != 0)
+        if (Math.abs(dx1 * dy2 - dy1 * dx2) > 0.01) {
+          smoothed.push(worldPath[i])
         }
-        smoothed.push(worldPath[farthest])
-        i = farthest
       }
+      smoothed.push(worldPath[worldPath.length - 1])
 
       // Build route result
       const coords = smoothed.map(([x, y], idx) => ({ id: `step_${idx}`, x_m: x, y_m: y }))
@@ -210,7 +234,7 @@ function clientAStar(fromPos, toPoi, pois, airport, walls) {
       // Check wall crossing for this grid edge
       const [x1, y1] = toWorld(c, r)
       const [x2, y2] = toWorld(nc, nr)
-      if (crossesWall(x1, y1, x2, y2, walls)) continue
+      if (crossesWall(x1, y1, x2, y2, mapWalls)) continue
 
       const moveCost = (dc2 !== 0 && dr2 !== 0) ? DIAG : STEP
       const tentG = g + moveCost

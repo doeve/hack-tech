@@ -27,8 +27,10 @@ export const useStore = create(
       setAirport: (a) => set({ airport: a }),
       setPois: (p) => set({ pois: p }),
       setNavGraph: (g) => set({ navGraph: g }),
-      floorWalls: [],  // [{x1,y1,x2,y2}] in map-metre coords, parsed from SVG
+      floorWalls: [],  // [{x1,y1,x2,y2}] in normalized 0..1 coords, parsed from SVG
       setFloorWalls: (w) => set({ floorWalls: w }),
+      floorSvgDims: null, // {w, h} from SVG viewBox — used to compute aspect-correct bounds
+      setFloorSvgDims: (d) => set({ floorSvgDims: d }),
 
       // Route
       route: null,
