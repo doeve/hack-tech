@@ -81,7 +81,8 @@ export default function FlightsPage() {
 
   const allFlights = apiFlights
 
-  const displayFlights = activeTab === 'my' ? myFlights : allFlights
+  const filteredMyFlights = myFlights.filter((f) => !f.direction || f.direction === direction)
+  const displayFlights = activeTab === 'my' ? filteredMyFlights : allFlights
 
   const filtered = displayFlights.filter((f) => {
     if (!searchQuery) return true
@@ -114,23 +115,34 @@ export default function FlightsPage() {
         </button>
       </div>
 
-      {/* Search */}
+      {/* Search + Scan */}
       <div className="px-5 mb-4">
-        <div className="relative">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search flight or city"
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50
-                       rounded-xl text-sm text-white placeholder-slate-500
-                       focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
-          />
+        <div className="relative flex items-center gap-2">
+          <div className="relative flex-1">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search flight or city"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-800/60 border border-slate-700/50
+                         rounded-xl text-sm text-white placeholder-slate-500
+                         focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+            />
+          </div>
+          <button
+            onClick={() => setShowScanner(true)}
+            className="flex-shrink-0 w-10 h-10 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center hover:bg-blue-600/30 transition-colors"
+          >
+            <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -145,25 +157,6 @@ export default function FlightsPage() {
           <button onClick={() => setScanResult(null)} className="hover:text-white ml-2">&times;</button>
         </div>
       )}
-
-      {/* Scan Button */}
-      <div className="px-5 mb-4">
-        <button
-          onClick={() => setShowScanner(true)}
-          className="w-full flex items-center gap-3 p-3.5 bg-blue-600/10 border border-blue-500/25 rounded-xl hover:bg-blue-600/20 transition-colors"
-        >
-          <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-            <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-            </svg>
-          </div>
-          <div className="flex-1 text-left">
-            <p className="text-sm font-semibold text-blue-400">Scan Boarding Pass</p>
-            <p className="text-xs text-slate-500">Add a flight by scanning its QR code</p>
-          </div>
-        </button>
-      </div>
 
       {/* Tabs */}
       <div className="flex gap-6 px-5 mb-4">

@@ -437,7 +437,9 @@ function AirportTab() {
     try {
       await api.delete(`/admin/pois/${id}`)
       setPois(pois.filter((p) => (p.poi_id || p.id) !== id))
-    } catch {}
+    } catch (err) {
+      console.error('Delete POI failed:', err)
+    }
   }
 
   const rawFloorPlanUrl = airport?.floor_plan_url || '/assets/floorplan.svg'

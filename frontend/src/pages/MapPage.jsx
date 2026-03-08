@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Html5Qrcode } from 'html5-qrcode'
 import { useStore } from '../store'
 import {
@@ -470,7 +469,6 @@ function useLongPress(onLongPress, onClick, ms = 500) {
 }
 
 export default function MapPage() {
-  const navigate = useNavigate()
   const {
     airport, setAirport, setPois, setNavGraph,
     navGraph, pois, session, setSession,
@@ -480,7 +478,6 @@ export default function MapPage() {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [floor, setFloor] = useState('L2')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const { confirmPosition } = useWebSocket(session?.id)
@@ -490,6 +487,42 @@ export default function MapPage() {
   const [positionMode, setPositionMode] = useState(null) // 'modal' | null
   const [settingPosition, setSettingPosition] = useState(false) // map tap mode
   const [zoomTrigger, setZoomTrigger] = useState(0)
+  const [zoomDelta, setZoomDelta] = useState(0) // +1 or -1 to zoom in/out
+  const mapRef = useRef(null)
+
+  // Set default position to bottom-center of the SVG floor plan
+  const floorSvgDims = useStore((s) => s.floorSvgDims)
+  const floorWalls = useStore((s) => s.floorWalls)
+  const defaultPosSetRef = useRef(false)
+  useEffect(() => {
+    if (defaultPosSetRef.current) return
+    const ap = useStore.getState().airport
+    const dims = useStore.getState().floorSvgDims
+    const walls = useStore.getState().floorWalls
+    if (!ap || !dims || !walls?.length) return
+    defaultPosSetRef.current = true
+    const fb = computeFloorBounds(ap, dims)
+
+    // Find the bottommost wall (lowest y in map coords) to place dot just inside
+    let minWallY = Infinity
+    for (const w of walls) {
+      const wy1 = fb.y0 + w.y1 * fb.h
+      const wy2 = fb.y0 + w.y2 * fb.h
+      if (wy1 < minWallY) minWallY = wy1
+      if (wy2 < minWallY) minWallY = wy2
+    }
+
+    const defaultX = fb.x0 + fb.w / 2
+    const defaultY = minWallY + 5 // 5m inside from the bottommost wall
+    useStore.getState().setPosition({
+      x_m: defaultX,
+      y_m: defaultY,
+      heading_deg: 0,
+      drift_radius_m: 0,
+      source: 'default',
+    })
+    useStore.getState().setPositionConfirmed(true)
+  }, [airport, floorSvgDims, floorWalls])
 
   // IMU for real-time heading + step-based dead reckoning
   const { heading, stepCount, permissionGranted, requestPermission, setOnStep } = useIMU()
@@ -746,6 +779,8 @@ export default function MapPage() {
         onSelectDestination={handleSelectDestination}
         clientRoute={route?._coords}
         zoomToUserTrigger={zoomTrigger}
+        mapRef={mapRef}
+        zoomDelta={zoomDelta}
       />
 
       {/* Search Bar Overlay */}
@@ -815,29 +850,18 @@ export default function MapPage() {
         />
       )}
 
-      {/* Floor Level Selector */}
-      <div className="absolute top-20 right-4 z-[1000] flex flex-col gap-1">
-        {['L3', 'L2', 'L1'].map((lvl) => (
-          <button
-            key={lvl}
-            onClick={() => setFloor(lvl)}
-            className={`w-9 h-9 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
-              floor === lvl
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                : 'bg-slate-800/80 text-slate-400 hover:bg-slate-700/80 border border-slate-700/50'
-            }`}
-          >
-            {lvl}
-          </button>
-        ))}
-      </div>
-
       {/* Zoom Controls + Navigation Button */}
-      <div className="absolute right-4 z-[1000] flex flex-col gap-1.5" style={{ top: '220px' }}>
-        <button className="w-9 h-9 bg-slate-800/80 backdrop-blur border border-slate-700/50 rounded-lg flex items-center justify-center text-white text-lg hover:bg-slate-700/80 transition-colors">
+      <div className="absolute top-20 right-4 z-[1000] flex flex-col gap-1.5">
+        <button
+          onClick={() => setZoomDelta((d) => d + 1)}
+          className="w-9 h-9 bg-slate-800/80 backdrop-blur border border-slate-700/50 rounded-lg flex items-center justify-center text-white text-lg hover:bg-slate-700/80 transition-colors"
+        >
           +
         </button>
-        <button className="w-9 h-9 bg-slate-800/80 backdrop-blur border border-slate-700/50 rounded-lg flex items-center justify-center text-white text-lg hover:bg-slate-700/80 transition-colors">
+        <button
+          onClick={() => setZoomDelta((d) => d - 1)}
+          className="w-9 h-9 bg-slate-800/80 backdrop-blur border border-slate-700/50 rounded-lg flex items-center justify-center text-white text-lg hover:bg-slate-700/80 transition-colors"
+        >
           -
         </button>
         {/* Navigation button: tap = zoom to user, hold = reposition */}
@@ -856,20 +880,6 @@ export default function MapPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-        </button>
-      </div>
-
-      {/* AR Mode Button */}
-      <div className="absolute bottom-40 left-4 z-[1000]">
-        <button
-          onClick={() => navigate('/ar')}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-full shadow-lg shadow-blue-600/30 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          <span className="text-sm font-semibold tracking-wide">AR MODE</span>
         </button>
       </div>
 

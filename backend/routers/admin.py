@@ -141,6 +141,15 @@ async def update_poi(poi_id: str, body: dict = Body(...), db: AsyncSession = Dep
 
 @router.delete("/pois/{poi_id}")
 async def delete_poi(poi_id: str, db: AsyncSession = Depends(get_db), user=Depends(get_current_user)):
+    # Nullify FK references before deleting
+    from models.flights import Flight
+    from models.navigation import NavNode
+    from models.dead_reckoning import DrSession
+    from models.touchpoints import Touchpoint
+    await db.execute(update(Flight).where(Flight.gate_poi_id == poi_id).values(gate_poi_id=None))
+    await db.execute(update(NavNode).where(NavNode.poi_id == poi_id).values(poi_id=None))
+    await db.execute(update(DrSession).where(DrSession.destination_poi_id == poi_id).values(destination_poi_id=None))
+    await db.execute(update(Touchpoint).where(Touchpoint.poi_id == poi_id).values(poi_id=None))
     await db.execute(delete(Poi).where(Poi.id == poi_id))
     await db.commit()
     return {"ok": True}

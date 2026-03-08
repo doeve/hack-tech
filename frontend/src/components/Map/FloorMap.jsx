@@ -49,6 +49,24 @@ function ZoomToUser({ trigger }) {
   return null
 }
 
+function MapRefExposer({ mapRef }) {
+  const map = useMap()
+  useEffect(() => {
+    if (mapRef) mapRef.current = map
+  }, [map, mapRef])
+  return null
+}
+
+function ZoomHandler({ zoomDelta }) {
+  const map = useMap()
+  useEffect(() => {
+    if (!zoomDelta) return
+    if (zoomDelta > 0) map.zoomIn()
+    else map.zoomOut()
+  }, [zoomDelta, map])
+  return null
+}
+
 // Compute image bounds that preserve SVG aspect ratio, fitted within airport bounds
 function computeFloorBounds(airport, svgDims) {
   const W = airport.width_m, H = airport.height_m
@@ -65,7 +83,7 @@ function computeFloorBounds(airport, svgDims) {
   return { x0: (W - imgW) / 2, y0: 0, w: imgW, h: H }
 }
 
-export default function FloorMap({ onMapClick, onSelectDestination, clientRoute, zoomToUserTrigger }) {
+export default function FloorMap({ onMapClick, onSelectDestination, clientRoute, zoomToUserTrigger, mapRef, zoomDelta }) {
   const { airport, floorSvgDims, positionConfirmed } = useStore()
 
   const bounds = useMemo(() => {
@@ -99,6 +117,8 @@ export default function FloorMap({ onMapClick, onSelectDestination, clientRoute,
       <MapController airport={airport} />
       <MapClickHandler onMapClick={onMapClick} />
       <ZoomToUser trigger={zoomToUserTrigger} />
+      {mapRef && <MapRefExposer mapRef={mapRef} />}
+      <ZoomHandler zoomDelta={zoomDelta} />
       {positionConfirmed && <BlueDot />}
 
       <RoutePolyline clientRoute={clientRoute} />
