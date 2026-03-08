@@ -561,17 +561,8 @@ export default function MapPage() {
     })
   }, [setOnStep])
 
-  // Update heading in store from IMU (even without steps)
-  useEffect(() => {
-    if (!permissionGranted || !positionConfirmed) return
-    const id = setInterval(() => {
-      const pos = useStore.getState().position
-      if (Math.abs(pos.heading_deg - heading) > 2) {
-        useStore.getState().setPosition({ ...pos, heading_deg: heading })
-      }
-    }, 200)
-    return () => clearInterval(id)
-  }, [permissionGranted, heading, positionConfirmed])
+  // Heading is now updated directly in BlueDot via IMU deviceorientation listener.
+  // No need to funnel heading through the store at an interval.
 
   // Request IMU permission early (no modal on entry — only when navigating)
   useEffect(() => {

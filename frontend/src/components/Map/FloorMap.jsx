@@ -13,25 +13,27 @@ import POIMarkers from './POIMarkers'
 function MapController({ airport, imageBounds }) {
   const map = useMap()
   const didInit = useRef(false)
+  const positionConfirmed = useStore((s) => s.positionConfirmed)
 
   useEffect(() => {
     if (!airport || didInit.current) return
-    didInit.current = true
 
-    // Fit the SVG image (or airport bounds) to screen height, centered on user position
-    const pos = useStore.getState().position
-    const posConfirmed = useStore.getState().positionConfirmed
+    // Show ~200m vertically. In CRS.Simple zoom 0 = 1px per unit (metre).
+    const VISIBLE_METRES = 100
+    const containerH = map.getSize().y || 800
+    const zoom = Math.log2(containerH / VISIBLE_METRES)
 
-    // Use image bounds if available, otherwise airport bounds
-    const fitBounds = imageBounds || [[0, 0], [airport.height_m, airport.width_m]]
-    map.fitBounds(fitBounds)
-
-    // If user position is confirmed, center on them at the fitted zoom
-    if (posConfirmed) {
-      const zoom = map.getZoom()
+    if (positionConfirmed) {
+      didInit.current = true
+      const pos = useStore.getState().position
       map.setView([pos.y_m, pos.x_m], zoom, { animate: false })
+    } else {
+      // Temporarily show airport center until position is confirmed
+      const fitBounds = imageBounds || [[0, 0], [airport.height_m, airport.width_m]]
+      const center = L.latLngBounds(fitBounds).getCenter()
+      map.setView(center, zoom, { animate: false })
     }
-  }, [airport, imageBounds, map])
+  }, [airport, imageBounds, map, positionConfirmed])
 
   return null
 }
@@ -97,6 +99,57 @@ function computeFloorBounds(airport, svgDims) {
   return { x0: (W - imgW) / 2, y0: 0, w: imgW, h: H }
 }
 
+// Nice round numbers for the scale bar
+const SCALE_STEPS = [1, 2, 5, 10, 20, 50, 100, 200, 500]
+
+function ScaleBar() {
+  const map = useMap()
+  const barRef = useRef(null)
+  const labelRef = useRef(null)
+  const rafRef = useRef(null)
+
+  useEffect(() => {
+    const update = () => {
+      rafRef.current = requestAnimationFrame(update)
+
+      const size = map.getSize()
+      if (!size.x || !barRef.current) return
+      const left = map.containerPointToLatLng([0, size.y / 2])
+      const right = map.containerPointToLatLng([size.x, size.y / 2])
+      const metresPerPx = Math.abs(right.lng - left.lng) / size.x
+
+      const targetMetres = metresPerPx * 100
+      let best = SCALE_STEPS[0]
+      for (const s of SCALE_STEPS) {
+        if (s <= targetMetres * 1.5) best = s
+      }
+
+      const px = best / metresPerPx
+      barRef.current.style.width = `${px}px`
+      if (labelRef.current) {
+        labelRef.current.textContent = best >= 1000 ? `${best / 1000} km` : `${best} m`
+      }
+    }
+
+    rafRef.current = requestAnimationFrame(update)
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
+  }, [map])
+
+  return (
+    <div style={{
+      position: 'absolute', bottom: 96, left: 16, zIndex: 900,
+      pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+    }}>
+      <span ref={labelRef} style={{ fontSize: 10, color: '#94a3b8', fontWeight: 500, marginBottom: 2 }} />
+      <div ref={barRef} style={{ position: 'relative', height: 6, minWidth: 1 }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: '#94a3b8', borderRadius: 2, opacity: 0.5 }} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: 1, height: 6, background: '#94a3b8', opacity: 0.5 }} />
+        <div style={{ position: 'absolute', bottom: 0, right: 0, width: 1, height: 6, background: '#94a3b8', opacity: 0.5 }} />
+      </div>
+    </div>
+  )
+}
+
 export default function FloorMap({ onMapClick, onSelectDestination, clientRoute, zoomToUserTrigger, mapRef, zoomDelta }) {
   const { airport, floorSvgDims, positionConfirmed } = useStore()
 
@@ -125,7 +178,7 @@ export default function FloorMap({ onMapClick, onSelectDestination, clientRoute,
       minZoom={-2}
       maxZoom={8}
       attributionControl={false}
-      style={{ width: '100%', height: '100%', background: '#0b1120' }}
+      style={{ width: '100%', height: '100%', background: '#0b1120', zIndex: 0 }}
     >
       <ImageOverlay url={floorPlanUrl} bounds={imageBounds} opacity={0.9} />
       <MapController airport={airport} imageBounds={imageBounds} />
@@ -137,6 +190,7 @@ export default function FloorMap({ onMapClick, onSelectDestination, clientRoute,
 
       <RoutePolyline clientRoute={clientRoute} />
       <POIMarkers onSelectDestination={onSelectDestination} />
+      <ScaleBar />
     </MapContainer>
   )
 }

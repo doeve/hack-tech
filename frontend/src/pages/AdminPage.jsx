@@ -574,7 +574,7 @@ function AirportTab() {
           minZoom={-2}
           maxZoom={4}
           attributionControl={false}
-          style={{ width: '100%', height: '100%', background: '#0b1120' }}
+          style={{ width: '100%', height: '100%', background: '#0b1120', zIndex: 0 }}
         >
           <ImageOverlay url={floorPlanUrl} bounds={bounds} opacity={0.9} />
           <MapFitter bounds={bounds} />
