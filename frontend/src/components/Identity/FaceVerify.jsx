@@ -16,9 +16,9 @@ export default function FaceVerify({ touchpointId, onResult }) {
     if (!webcamRef.current || !loaded || !user) return
     setStatus('verifying')
     setError(null)
+    setResult(null)
 
     try {
-      // 1. Capture live descriptor from camera
       const video = webcamRef.current.video
       const live = await captureDescriptor(video)
       if (!live) {
@@ -26,14 +26,10 @@ export default function FaceVerify({ touchpointId, onResult }) {
         setStatus('error')
         return
       }
-
-      // 2. Fetch stored descriptor
       const { data: stored } = await getFaceDescriptor(user.id || user.user_id)
-
-      // 3. Match on-device
       const match = matchDescriptor(stored.face_descriptor, live.descriptor)
 
-      // 4. If we have a token, verify at the touchpoint
+
       if (verificationToken?.token && touchpointId) {
         const { data: verifyResult } = await verifyAtTouchpoint(touchpointId, {
           token_jwt: verificationToken.token,
@@ -57,49 +53,77 @@ export default function FaceVerify({ touchpointId, onResult }) {
   }, [loaded, user, verificationToken, touchpointId, captureDescriptor, matchDescriptor, onResult])
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 w-full max-w-sm aspect-[4/3]">
+    <div className="flex flex-col items-center gap-6">
+      {}
+      <div className="relative rounded-full overflow-hidden border-4 border-aviation w-64 h-64 bg-coolWhite shadow-md">
         <Webcam
           ref={webcamRef}
           audio={false}
           videoConstraints={{ facingMode: 'user', width: 640, height: 480 }}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover scale-x-[-1]"
         />
+        
+        {}
         {status === 'verifying' && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <div className="animate-spin w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full" />
+          <div className="absolute inset-0 bg-aviation/40 backdrop-blur-sm flex items-center justify-center">
+            <div className="animate-spin w-10 h-10 border-4 border-white border-t-transparent rounded-full" />
+          </div>
+        )}
+
+        {}
+        {status === 'idle' && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-40 h-48 border-2 border-dashed border-aviation/30 rounded-full animate-pulse" />
           </div>
         )}
       </div>
 
+      {}
       {result && (
-        <div className={`p-3 rounded-xl text-center w-full max-w-sm ${
-          result.match ? 'bg-green-900/30 border border-green-700' : 'bg-red-900/30 border border-red-700'
+        <div className={`p-4 rounded-2xl text-center w-full max-w-sm border-2 shadow-sm transition-all animate-in zoom-in duration-300 ${
+          result.match ? 'bg-white border-successMint' : 'bg-red-50 border-red-200'
         }`}>
-          <p className={`font-medium ${result.match ? 'text-green-400' : 'text-red-400'}`}>
-            {result.match ? 'Identity Verified' : 'No Match'}
-          </p>
-          <p className="text-xs text-slate-400 mt-1">
-            Distance: {result.distance?.toFixed(4)} | Threshold: 0.6
-          </p>
-          {result.outcome && (
-            <p className="text-xs text-slate-300 mt-1">
-              Touchpoint: {result.outcome}
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <div className={`w-2 h-2 rounded-full ${result.match ? 'bg-successMint' : 'bg-red-500'}`} />
+            <p className={`font-bold text-sm uppercase tracking-widest ${result.match ? 'text-aviation' : 'text-red-700'}`}>
+              {result.match ? 'Identity Verified' : 'No Match'}
             </p>
-          )}
+          </div>
+          
+          <div className="flex flex-col gap-1">
+            <p className="text-[10px] text-gray-400 font-mono uppercase">
+              Distance: {result.distance?.toFixed(4)} | Threshold: 0.6
+            </p>
+            {result.outcome && (
+              <p className="text-[10px] font-bold text-aviation uppercase tracking-tighter">
+                Outcome: {result.outcome}
+              </p>
+            )}
+          </div>
         </div>
       )}
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && (
+        <div className="bg-red-50 border border-red-100 p-3 rounded-xl w-full max-w-sm">
+          <p className="text-red-600 text-xs font-medium text-center">{error}</p>
+        </div>
+      )}
 
       <button
         onClick={handleVerify}
         disabled={!loaded || status === 'verifying'}
-        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700
-                   text-white rounded-xl font-medium transition-colors"
+        className="px-10 py-3 bg-aviation hover:bg-aviation/90 disabled:bg-gray-200
+                   disabled:text-gray-400 text-white rounded-full font-bold text-xs
+                   uppercase tracking-widest transition-all shadow-md active:scale-95"
       >
         {status === 'verifying' ? 'Verifying...' : 'Verify Identity'}
       </button>
+
+      <footer className="max-w-[260px]">
+        <p className="text-[9px] text-gray-400 text-center uppercase tracking-tight leading-relaxed">
+          Biometric comparison is performed locally. Match scores are sent to touchpoints for verification.
+        </p>
+      </footer>
     </div>
   )
 }
