@@ -190,13 +190,34 @@ async def delete_position_marker(marker_id: str, db: AsyncSession = Depends(get_
 
 # ── Notifications ───────────────────────────────────────────────────
 
+def _send_push(sub, title, body):
+    """Send a web-push notification directly. Returns True on success."""
+    import json
+    try:
+        from pywebpush import webpush
+        from config import settings
+        webpush(
+            subscription_info={
+                "endpoint": sub.endpoint,
+                "keys": {"p256dh": sub.p256dh_key, "auth": sub.auth_key},
+            },
+            data=json.dumps({"title": title, "body": body, "url": "/"}),
+            vapid_private_key=settings.vapid_private_key,
+            vapid_claims={"sub": f"mailto:{settings.vapid_contact_email}"},
+        )
+        return True
+    except Exception as e:
+        import logging
+        logging.getLogger("admin").warning(f"Push send failed: {e}")
+        return False
+
+
 @router.post("/notify")
 async def send_notification(body: dict = Body(...), db: AsyncSession = Depends(get_db), user=Depends(get_current_user)):
     from models.push import PushSubscription
 
     title = body.get("title", "SkyGuide Alert")
     msg_body = body.get("body", "")
-    priority = body.get("priority", "normal")
     target_user = body.get("user_id")
 
     query = select(PushSubscription)
@@ -205,21 +226,12 @@ async def send_notification(body: dict = Body(...), db: AsyncSession = Depends(g
     result = await db.execute(query)
     subs = result.scalars().all()
 
-    count = 0
+    sent = 0
     for sub in subs:
-        db.add(NotificationQueue(
-            user_id=sub.user_id,
-            device_key=sub.device_key,
-            channel="push",
-            title=title,
-            body=msg_body,
-            priority=priority,
-            payload=body.get("payload", {}),
-        ))
-        count += 1
+        if _send_push(sub, title, msg_body):
+            sent += 1
 
-    await db.commit()
-    return {"queued": count}
+    return {"sent": sent, "subscribers": len(subs)}
 
 
 @router.post("/announce")
@@ -230,18 +242,9 @@ async def pa_announcement(body: dict = Body(...), db: AsyncSession = Depends(get
     result = await db.execute(select(PushSubscription))
     subs = result.scalars().all()
 
-    count = 0
+    sent = 0
     for sub in subs:
-        db.add(NotificationQueue(
-            user_id=sub.user_id,
-            device_key=sub.device_key,
-            channel="push",
-            title="PA Announcement",
-            body=message,
-            priority="high",
-            payload={"type": "announcement", "message": message},
-        ))
-        count += 1
+        if _send_push(sub, "PA Announcement", message):
+            sent += 1
 
-    await db.commit()
-    return {"queued": count, "message": message}
+    return {"sent": sent, "subscribers": len(subs), "message": message}

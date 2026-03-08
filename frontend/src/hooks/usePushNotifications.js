@@ -9,43 +9,57 @@ export function usePushNotifications() {
     if (!user || !('serviceWorker' in navigator) || !('PushManager' in window)) return
 
     const setup = async () => {
-      // 1. Register service worker (may fail with self-signed certs in dev)
-      let reg
-      try {
-        reg = await navigator.serviceWorker.register('/sw.js')
-      } catch {
-        console.warn('Service worker registration failed (expected with self-signed certs)')
-        return
+      // Wait for existing SW registration (registered in main.jsx)
+      let reg = await navigator.serviceWorker.getRegistration('/sw.js')
+      if (!reg) {
+        // Try registering directly as fallback
+        try {
+          reg = await navigator.serviceWorker.register('/sw.js')
+        } catch {
+          console.warn('Service worker registration failed')
+          return
+        }
       }
 
-      // 2. Check existing permission
+      // Wait for SW to be active
+      if (!reg.active) {
+        await new Promise((resolve) => {
+          const sw = reg.installing || reg.waiting
+          if (!sw) return resolve()
+          sw.addEventListener('statechange', () => {
+            if (sw.state === 'activated') resolve()
+          })
+        })
+      }
+
       if (Notification.permission === 'denied') return
 
-      // 3. Request permission on first call (must be triggered by user gesture
-      //    in production; for the demo, call from a button onClick)
       const permission = await Notification.requestPermission()
       if (permission !== 'granted') return
 
-      // 4. Fetch VAPID public key
       const { data } = await api.get('/push/vapid-public-key')
+      if (!data.public_key) return
+
       const applicationServerKey = urlBase64ToUint8Array(data.public_key)
 
-      // 5. Subscribe
-      const subscription = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey,
-      })
+      // Check for existing subscription first
+      let subscription = await reg.pushManager.getSubscription()
+      if (!subscription) {
+        subscription = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey,
+        })
+      }
 
-      // 6. Send subscription object to backend
       const sub = subscription.toJSON()
       await api.post('/push/subscribe', {
         endpoint:   sub.endpoint,
         keys:       sub.keys,
-        device_key: localStorage.getItem('device_key') ?? 'unknown',
+        device_key: localStorage.getItem('device_key') ?? navigator.userAgent.slice(0, 50),
       })
     }
 
-    setup().catch(console.error)
+    setup().catch((err) => console.warn('Push setup failed:', err))
   }, [user])
 }
 

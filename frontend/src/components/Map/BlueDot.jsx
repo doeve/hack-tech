@@ -12,7 +12,6 @@ function lerpAngle(from, to, t) {
 export default function BlueDot() {
   const map = useMap()
   const markerRef = useRef(null)
-  const driftRef = useRef(null)
   const animRef = useRef(null)
 
   // Live state for smooth animation — bypasses React render cycle
@@ -20,7 +19,6 @@ export default function BlueDot() {
   const targetPos = useRef({ x: 0, y: 0 })
   const displayHeading = useRef(0)
   const targetHeading = useRef(0)
-  const driftRadius = useRef(0)
   const initialized = useRef(false)
 
   // Create Leaflet elements once
@@ -61,16 +59,6 @@ export default function BlueDot() {
     })
     markerRef.current = L.marker([0, 0], { icon, zIndexOffset: 1000, interactive: false }).addTo(map)
 
-    driftRef.current = L.circle([0, 0], {
-      radius: 0,
-      color: '#3b82f6',
-      fillColor: '#3b82f6',
-      fillOpacity: 0.08,
-      weight: 1,
-      dashArray: '4,4',
-      interactive: false,
-    }).addTo(map)
-
     // Inject pulse keyframes if not already present
     if (!document.getElementById('bd-pulse-style')) {
       const style = document.createElement('style')
@@ -84,7 +72,6 @@ export default function BlueDot() {
 
     return () => {
       markerRef.current?.remove()
-      driftRef.current?.remove()
       if (animRef.current) cancelAnimationFrame(animRef.current)
     }
   }, [map])
@@ -108,13 +95,6 @@ export default function BlueDot() {
 
       const latlng = [displayPos.current.y, displayPos.current.x]
       markerRef.current?.setLatLng(latlng)
-      driftRef.current?.setLatLng(latlng)
-      driftRef.current?.setRadius(driftRadius.current)
-      // Hide drift circle at zero radius to prevent ghost artifact during zoom
-      if (driftRef.current) {
-        const el = driftRef.current.getElement?.()
-        if (el) el.style.display = driftRadius.current > 0.1 ? '' : 'none'
-      }
 
       // Update cone rotation directly on DOM element
       const cone = document.getElementById('bd-cone')
@@ -135,7 +115,6 @@ export default function BlueDot() {
 
       targetPos.current.x = pos.x_m
       targetPos.current.y = pos.y_m
-      driftRadius.current = pos.drift_radius_m || 0
 
       if (!initialized.current) {
         // Snap immediately on first position (no lerp)
@@ -153,7 +132,6 @@ export default function BlueDot() {
       displayPos.current.x = pos.x_m
       displayPos.current.y = pos.y_m
       displayHeading.current = pos.heading_deg || 0
-      driftRadius.current = pos.drift_radius_m || 0
       initialized.current = true
     }
     return unsub
