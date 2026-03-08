@@ -42,7 +42,7 @@ export default function AdminPage() {
     departed: flights.filter((f) => f.status === 'departed').length,
     scheduled: flights.filter((f) => f.status === 'scheduled').length,
     cancelled: flights.filter((f) => f.status === 'cancelled').length,
-    final: flights.filter((f) => f.status === 'final_call').length,
+    final: flights.filter((f) => f.status === 'gate_closed').length,
   }
 
   const handleStart = () => api.post('/admin/sim/start').then((r) => setWorker(r.data))
@@ -156,10 +156,10 @@ export default function AdminPage() {
 const STATUS_BADGE = {
   scheduled: 'bg-slate-500/20 text-slate-400',
   boarding: 'bg-blue-500/20 text-blue-400',
-  final_call: 'bg-orange-500/20 text-orange-400',
+  gate_closed: 'bg-orange-500/20 text-orange-400',
   delayed: 'bg-red-500/20 text-red-400',
   departed: 'bg-green-500/20 text-green-400',
-  arrived: 'bg-green-500/20 text-green-400',
+  landed: 'bg-green-500/20 text-green-400',
   cancelled: 'bg-red-500/20 text-red-400',
 }
 

@@ -7,13 +7,13 @@ import BottomNav from '../components/BottomNav'
 
 const STATUS_COLORS = {
   boarding: 'bg-blue-500/20 text-blue-400',
-  'final call': 'bg-orange-500/20 text-orange-400',
+  gate_closed: 'bg-orange-500/20 text-orange-400',
   delayed: 'bg-red-500/20 text-red-400',
   on_time: 'bg-green-500/20 text-green-400',
   scheduled: 'bg-green-500/20 text-green-400',
   cancelled: 'bg-red-500/20 text-red-400',
   landed: 'bg-slate-500/20 text-slate-400',
-  arrived: 'bg-green-500/20 text-green-400',
+  gate_closed: 'bg-orange-500/20 text-orange-400',
   departed: 'bg-cyan-500/20 text-cyan-400',
 }
 

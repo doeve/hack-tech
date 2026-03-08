@@ -2,7 +2,7 @@
 Background flight-simulation worker.
 
 Creates realistic flights in the DB and advances them through
-Scheduled → Boarding → Final Call → Departed, with random delays,
+Scheduled → Boarding → Gate Closed → Departed, with random delays,
 gate changes, and cancellations.  Every significant event queues a
 push notification so the frontend receives real-time alerts.
 """
@@ -142,7 +142,7 @@ async def _tick(db):
     result = await db.execute(
         select(Flight)
         .where(Flight.airport_id == airport.id)
-        .where(Flight.status.notin_(["departed", "cancelled", "arrived"]))
+        .where(Flight.status.notin_(["departed", "cancelled", "landed"]))
     )
     flights = result.scalars().all()
 
@@ -182,14 +182,14 @@ async def _tick(db):
 
         # ── Final call (≤ 8 min)
         if f.status == "boarding" and 0 < ttd <= 8:
-            f.status = "final_call"
+            f.status = "gate_closed"
             gate = (f.raw_source or {}).get("gate", "?")
             await _notify(db, "Final Boarding Call",
                           f"Last call — {f.flight_number} at Gate {gate}!",
                           "high", {"type": "final_call"})
 
         # ── Departed (past scheduled time)
-        if f.status in ("boarding", "final_call") and ttd <= 0:
+        if f.status in ("boarding", "gate_closed") and ttd <= 0:
             f.status = "departed"
             f.actual_at = now_utc
             gate = (f.raw_source or {}).get("gate", "?")
@@ -199,7 +199,7 @@ async def _tick(db):
 
         # ── Arrived (arrivals past scheduled)
         if f.direction == "arrival" and f.status == "scheduled" and ttd <= -5:
-            f.status = "arrived"
+            f.status = "landed"
             f.actual_at = now_utc
 
     # ── Rare cancellation (0.4 %)
@@ -212,7 +212,7 @@ async def _tick(db):
                       "high", {"type": "cancelled"})
 
     # ── Create new flights periodically
-    active_count = len([f for f in flights if f.status not in ("departed", "cancelled", "arrived")])
+    active_count = len([f for f in flights if f.status not in ("departed", "cancelled", "landed")])
     if _state["elapsed"] % 6 == 0 or active_count < 5:
         nf = await _create_flight(db, airport.id)
         gate = (nf.raw_source or {}).get("gate", "?")
@@ -225,7 +225,7 @@ async def _tick(db):
     await db.execute(
         delete(Flight)
         .where(Flight.airport_id == airport.id)
-        .where(Flight.status.in_(["departed", "cancelled", "arrived"]))
+        .where(Flight.status.in_(["departed", "cancelled", "landed"]))
         .where(Flight.scheduled_at < cutoff)
     )
 

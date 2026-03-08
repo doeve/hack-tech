@@ -1,11 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Html5Qrcode } from 'html5-qrcode'
 import { useStore } from '../store'
-import { subscribeFlight } from '../api/client'
 import FaceEnroll from '../components/Identity/FaceEnroll'
 
-const STEPS = ['Welcome', 'Biometrics', 'Document', 'Ticket']
+const STEPS = ['Welcome', 'Biometrics', 'Document']
 
 export default function OnboardingPage() {
   const navigate = useNavigate()
@@ -14,27 +12,24 @@ export default function OnboardingPage() {
 
   const finish = () => {
     setOnboardingComplete(true)
-    navigate('/map', { replace: true })
+    navigate('/flights', { replace: true })
   }
 
   return (
     <div className="min-h-full bg-[#0b1120] flex flex-col">
       {/* Progress dots */}
-      {step < 4 && (
-        <div className="flex items-center justify-center gap-2 pt-6 pb-2">
-          {STEPS.map((_, i) => (
-            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === step ? 'w-8 bg-blue-500' : i < step ? 'w-4 bg-blue-500/40' : 'w-4 bg-slate-700'
-            }`} />
-          ))}
-        </div>
-      )}
+      <div className="flex items-center justify-center gap-2 pt-6 pb-2">
+        {STEPS.map((_, i) => (
+          <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${
+            i === step ? 'w-8 bg-blue-500' : i < step ? 'w-4 bg-blue-500/40' : 'w-4 bg-slate-700'
+          }`} />
+        ))}
+      </div>
 
       <div className="flex-1 flex flex-col">
         {step === 0 && <WelcomeStep onNext={() => setStep(1)} />}
         {step === 1 && <BiometricStep onNext={() => setStep(2)} onSkip={() => setStep(2)} />}
-        {step === 2 && <DocumentStep onNext={() => setStep(3)} onSkip={() => setStep(3)} setDocumentId={setDocumentId} />}
-        {step === 3 && <TicketStep onNext={finish} onSkip={finish} />}
+        {step === 2 && <DocumentStep onFinish={finish} setDocumentId={setDocumentId} />}
       </div>
     </div>
   )
@@ -95,29 +90,39 @@ function BiometricStep({ onNext, onSkip }) {
   )
 }
 
-/* ─── Step 2: Document Submission (mock) ───────────────────────── */
-function DocumentStep({ onNext, onSkip, setDocumentId }) {
+/* ─── Step 2: Document — select type, scan/photo, mock verify ──── */
+function DocumentStep({ onFinish, setDocumentId }) {
   const [docType, setDocType] = useState(null) // null | 'passport' | 'national_id'
-  const [verifying, setVerifying] = useState(false)
-  const [verified, setVerified] = useState(false)
+  const [phase, setPhase] = useState('choose') // choose | capture | verifying | verified
 
   const handleSelect = (type) => {
     setDocType(type)
-    setVerifying(true)
-    // Mock verification delay
-    setTimeout(() => {
-      setVerifying(false)
-      setVerified(true)
-      setDocumentId(`mock_${type}_${Date.now()}`)
-      // Auto-advance after brief success display
-      setTimeout(onNext, 1200)
-    }, 2000)
+    setPhase('capture')
   }
 
-  if (verified) {
+  const handleCaptured = useCallback(() => {
+    setPhase('verifying')
+    setTimeout(() => {
+      setPhase('verified')
+      setDocumentId(`mock_${docType}_${Date.now()}`)
+      setTimeout(onFinish, 1200)
+    }, 2000)
+  }, [docType, setDocumentId, onFinish])
+
+  const handleSkipCapture = useCallback(() => {
+    // Skip photo but still mock-approve
+    setPhase('verifying')
+    setTimeout(() => {
+      setPhase('verified')
+      setDocumentId(`mock_${docType}_${Date.now()}`)
+      setTimeout(onFinish, 1200)
+    }, 1500)
+  }, [docType, setDocumentId, onFinish])
+
+  if (phase === 'verified') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <div className="w-16 h-16 bg-green-500/15 rounded-full flex items-center justify-center mb-4 animate-[scale-in_0.3s_ease-out]">
+        <div className="w-16 h-16 bg-green-500/15 rounded-full flex items-center justify-center mb-4">
           <svg className="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
           </svg>
@@ -128,7 +133,7 @@ function DocumentStep({ onNext, onSkip, setDocumentId }) {
     )
   }
 
-  if (verifying) {
+  if (phase === 'verifying') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
         <div className="animate-spin w-10 h-10 border-3 border-blue-400 border-t-transparent rounded-full mb-4" />
@@ -138,6 +143,11 @@ function DocumentStep({ onNext, onSkip, setDocumentId }) {
     )
   }
 
+  if (phase === 'capture') {
+    return <DocumentCapture docType={docType} onCaptured={handleCaptured} onSkip={handleSkipCapture} onBack={() => setPhase('choose')} />
+  }
+
+  // phase === 'choose'
   return (
     <div className="flex-1 flex flex-col px-6 pt-6">
       <div className="text-center mb-8">
@@ -148,7 +158,7 @@ function DocumentStep({ onNext, onSkip, setDocumentId }) {
           </svg>
         </div>
         <h2 className="text-xl font-bold text-white mb-1">Travel Document</h2>
-        <p className="text-sm text-slate-400">Select your identification type for verification</p>
+        <p className="text-sm text-slate-400">Select your identification type</p>
       </div>
 
       <div className="space-y-3 mb-6">
@@ -187,154 +197,142 @@ function DocumentStep({ onNext, onSkip, setDocumentId }) {
         </button>
       </div>
 
-      <button onClick={onSkip} className="py-2.5 text-sm text-slate-500 hover:text-slate-400 transition-colors">
+      <button onClick={onFinish} className="py-2.5 text-sm text-slate-500 hover:text-slate-400 transition-colors">
         Skip for now
       </button>
     </div>
   )
 }
 
-/* ─── Step 3: Add Ticket (QR Scan) ─────────────────────────────── */
-function TicketStep({ onNext, onSkip }) {
-  const [scanning, setScanning] = useState(false)
-  const [result, setResult] = useState(null) // { ok, flight } | { ok: false, message }
-
-  const handleScan = async (ticketData) => {
-    setScanning(false)
-    try {
-      await subscribeFlight(ticketData.flight_id)
-      setResult({ ok: true, flight: ticketData.flight_number || ticketData.flight_id })
-      setTimeout(onNext, 1500)
-    } catch {
-      setResult({ ok: false, message: 'Failed to add flight' })
-    }
-  }
-
-  if (result?.ok) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <div className="w-16 h-16 bg-green-500/15 rounded-full flex items-center justify-center mb-4">
-          <svg className="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold text-white mb-1">Flight Added</h2>
-        <p className="text-sm text-slate-400">{result.flight} added to your trips</p>
-      </div>
-    )
-  }
-
-  if (scanning) {
-    return <TicketScanner onScan={handleScan} onClose={() => setScanning(false)} />
-  }
-
-  return (
-    <div className="flex-1 flex flex-col px-6 pt-6">
-      <div className="text-center mb-8">
-        <div className="w-14 h-14 bg-cyan-500/15 rounded-2xl flex items-center justify-center mx-auto mb-3">
-          <svg className="w-7 h-7 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-              d="M21 16v-2l-8-5V3.5a1.5 1.5 0 00-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold text-white mb-1">Add Your Flight</h2>
-        <p className="text-sm text-slate-400">Scan your boarding pass to get started with navigation</p>
-      </div>
-
-      <button onClick={() => setScanning(true)}
-        className="w-full flex items-center gap-4 p-5 bg-gradient-to-r from-blue-600/15 to-cyan-600/15 border border-blue-500/25 rounded-2xl hover:from-blue-600/25 hover:to-cyan-600/25 transition-all mb-3">
-        <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-          <svg className="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-              d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-          </svg>
-        </div>
-        <div className="flex-1 text-left">
-          <p className="text-white font-semibold">Scan Boarding Pass</p>
-          <p className="text-xs text-slate-500">Point camera at ticket QR code</p>
-        </div>
-        <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
-      {result && !result.ok && (
-        <p className="text-red-400 text-sm text-center mb-3">{result.message}</p>
-      )}
-
-      <button onClick={onSkip} className="py-2.5 text-sm text-slate-500 hover:text-slate-400 transition-colors">
-        Skip — I'll add it later
-      </button>
-    </div>
-  )
-}
-
-/* ─── Inline ticket scanner ────────────────────────────────────── */
-function parseTicketQR(text) {
-  try {
-    const data = JSON.parse(text)
-    if (data.type === 'skyguide_ticket' && data.flight_id) return data
-  } catch {}
-  const trimmed = text.trim()
-  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmed)) {
-    return { flight_id: trimmed, flight_number: trimmed, type: 'skyguide_ticket' }
-  }
-  return null
-}
-
-function TicketScanner({ onScan, onClose }) {
-  const onScanRef = useRef(onScan)
-  onScanRef.current = onScan
-  const [error, setError] = useState(null)
-  const containerRef = useRef(null)
-  const scannerRef = useRef(null)
+/* ─── Document photo capture (camera) ──────────────────────────── */
+function DocumentCapture({ docType, onCaptured, onSkip, onBack }) {
+  const videoRef = useRef(null)
+  const streamRef = useRef(null)
+  const [captured, setCaptured] = useState(null) // data URL
+  const [cameraError, setCameraError] = useState(false)
 
   useEffect(() => {
     let active = true
-    const container = containerRef.current
-    if (!container) return
-    const id = 'ob-qr-' + Date.now()
-    container.id = id
-    container.innerHTML = ''
-    const timeout = setTimeout(() => {
-      if (!active) return
-      const scanner = new Html5Qrcode(id)
-      scannerRef.current = scanner
-      scanner.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (text) => {
-          if (!active) return
-          const ticket = parseTicketQR(text)
-          if (ticket) {
-            active = false
-            try { scanner.stop() } catch {}
-            onScanRef.current(ticket)
-          }
-        },
-        () => {}
-      ).catch(() => { if (active) setError('Camera access denied') })
-    }, 150)
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then((stream) => {
+        if (!active) { stream.getTracks().forEach((t) => t.stop()); return }
+        streamRef.current = stream
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+          videoRef.current.play()
+        }
+      })
+      .catch(() => { if (active) setCameraError(true) })
     return () => {
       active = false
-      clearTimeout(timeout)
-      try { scannerRef.current?.stop() } catch {}
-      if (container) container.innerHTML = ''
+      streamRef.current?.getTracks().forEach((t) => t.stop())
     }
   }, [])
+
+  const handleCapture = () => {
+    const video = videoRef.current
+    if (!video) return
+    const canvas = document.createElement('canvas')
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    canvas.getContext('2d').drawImage(video, 0, 0)
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85)
+    setCaptured(dataUrl)
+    streamRef.current?.getTracks().forEach((t) => t.stop())
+  }
+
+  const handleRetake = () => {
+    setCaptured(null)
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then((stream) => {
+        streamRef.current = stream
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+          videoRef.current.play()
+        }
+      })
+      .catch(() => setCameraError(true))
+  }
+
+  const label = docType === 'passport' ? 'Passport' : 'National ID'
 
   return (
     <div className="flex-1 flex flex-col px-6 pt-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-white">Scan Boarding Pass</h3>
-        <button onClick={onClose} className="text-slate-400 hover:text-white">
+        <button onClick={onBack} className="text-slate-400 hover:text-white">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
+        <h3 className="text-lg font-bold text-white">Scan {label}</h3>
+        <div className="w-5" />
       </div>
-      <div ref={containerRef} className="rounded-2xl overflow-hidden bg-black flex-1" style={{ minHeight: 300 }} />
-      {error && <p className="text-red-400 text-sm text-center mt-3">{error}</p>}
+
+      <p className="text-sm text-slate-400 text-center mb-4">
+        Take a photo of your {label.toLowerCase()} — make sure all details are visible
+      </p>
+
+      {cameraError ? (
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-3">
+            <svg className="w-7 h-7 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <p className="text-slate-500 text-sm mb-4">Camera not available</p>
+          <button onClick={onSkip}
+            className="py-2.5 px-6 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-xl font-medium transition-colors">
+            Continue without photo
+          </button>
+        </div>
+      ) : captured ? (
+        <div className="flex-1 flex flex-col">
+          <div className="relative rounded-2xl overflow-hidden bg-black mb-4 flex-1">
+            <img src={captured} alt="Captured document" className="w-full h-full object-contain" />
+            {/* Decorative document frame overlay */}
+            <div className="absolute inset-4 border-2 border-dashed border-white/20 rounded-xl pointer-events-none" />
+          </div>
+          <div className="flex gap-3 mb-4">
+            <button onClick={handleRetake}
+              className="flex-1 py-3 bg-slate-800 border border-slate-700/50 text-slate-300 rounded-xl font-medium text-sm transition-colors hover:bg-slate-700">
+              Retake
+            </button>
+            <button onClick={onCaptured}
+              className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium text-sm transition-colors shadow-lg shadow-blue-600/20">
+              Use Photo
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col">
+          <div className="relative rounded-2xl overflow-hidden bg-black mb-4 flex-1">
+            <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+            {/* Document frame guide */}
+            <div className="absolute inset-4 border-2 border-dashed border-white/30 rounded-xl pointer-events-none" />
+            <div className="absolute bottom-3 left-0 right-0 text-center">
+              <span className="text-[10px] text-white/50 bg-black/50 px-3 py-1 rounded-full">
+                Align document within frame
+              </span>
+            </div>
+          </div>
+          <button onClick={handleCapture}
+            className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-semibold text-sm transition-colors shadow-lg shadow-blue-600/20 mb-3">
+            <span className="flex items-center justify-center gap-2">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Capture
+            </span>
+          </button>
+          <button onClick={onSkip} className="py-2 text-sm text-slate-500 hover:text-slate-400 transition-colors">
+            Skip photo
+          </button>
+        </div>
+      )}
     </div>
   )
 }
