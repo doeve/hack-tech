@@ -53,14 +53,8 @@ export default function FaceVerify({ touchpointId, onResult }) {
   }, [loaded, user, verificationToken, touchpointId, captureDescriptor, matchDescriptor, onResult])
 
   return (
-<<<<<<< HEAD
     <div className="flex flex-col items-center gap-6">
-      {}
       <div className="relative rounded-full overflow-hidden border-4 border-aviation w-64 h-64 bg-coolWhite shadow-md">
-=======
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative rounded-2xl overflow-hidden border-2 border-slate-200 w-full max-w-sm aspect-[4/3]">
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
         <Webcam
           ref={webcamRef}
           audio={false}
@@ -68,47 +62,27 @@ export default function FaceVerify({ touchpointId, onResult }) {
           className="w-full h-full object-cover scale-x-[-1]"
         />
         
-        {}
         {status === 'verifying' && (
-<<<<<<< HEAD
           <div className="absolute inset-0 bg-aviation/40 backdrop-blur-sm flex items-center justify-center">
             <div className="animate-spin w-10 h-10 border-4 border-white border-t-transparent rounded-full" />
           </div>
         )}
 
-        {}
         {status === 'idle' && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-40 h-48 border-2 border-dashed border-aviation/30 rounded-full animate-pulse" />
-=======
-          <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center">
-            <div className="animate-spin w-8 h-8 border-2 border-[#1e3a8a] border-t-transparent rounded-full" />
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
           </div>
         )}
       </div>
 
-      {}
       {result && (
         <div className={`p-4 rounded-2xl text-center w-full max-w-sm border-2 shadow-sm transition-all animate-in zoom-in duration-300 ${
           result.match ? 'bg-white border-successMint' : 'bg-red-50 border-red-200'
         }`}>
-<<<<<<< HEAD
           <div className="flex items-center justify-center gap-2 mb-1">
             <div className={`w-2 h-2 rounded-full ${result.match ? 'bg-successMint' : 'bg-red-500'}`} />
             <p className={`font-bold text-sm uppercase tracking-widest ${result.match ? 'text-aviation' : 'text-red-700'}`}>
               {result.match ? 'Identity Verified' : 'No Match'}
-=======
-          <p className={`font-medium ${result.match ? 'text-green-400' : 'text-red-400'}`}>
-            {result.match ? 'Identity Verified' : 'No Match'}
-          </p>
-          <p className="text-xs text-slate-500 mt-1">
-            Distance: {result.distance?.toFixed(4)} | Threshold: 0.6
-          </p>
-          {result.outcome && (
-            <p className="text-xs text-slate-500 mt-1">
-              Touchpoint: {result.outcome}
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
             </p>
           </div>
           
@@ -134,14 +108,9 @@ export default function FaceVerify({ touchpointId, onResult }) {
       <button
         onClick={handleVerify}
         disabled={!loaded || status === 'verifying'}
-<<<<<<< HEAD
         className="px-10 py-3 bg-aviation hover:bg-aviation/90 disabled:bg-gray-200
                    disabled:text-gray-400 text-white rounded-full font-bold text-xs
                    uppercase tracking-widest transition-all shadow-md active:scale-95"
-=======
-        className="px-6 py-2.5 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 disabled:bg-slate-100
-                   text-white rounded-xl font-medium transition-colors"
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
       >
         {status === 'verifying' ? 'Verifying...' : 'Verify Identity'}
       </button>
@@ -153,10 +122,4 @@ export default function FaceVerify({ touchpointId, onResult }) {
       </footer>
     </div>
   )
-<<<<<<< HEAD
 }
-=======
-}
-
-
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a

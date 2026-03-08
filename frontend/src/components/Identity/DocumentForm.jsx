@@ -37,18 +37,11 @@ export default function DocumentForm({ onComplete }) {
     }
   }
 
-<<<<<<< HEAD
-  
   const inputClass = `w-full px-3 py-2.5 bg-coolWhite border border-gray-200
     rounded-lg text-sm text-anthracite placeholder-gray-400
     focus:outline-none focus:ring-2 focus:ring-aviation/50 focus:border-aviation transition-all`
 
   const labelClass = `block text-[11px] font-bold text-aviation uppercase mb-1 tracking-wider`
-=======
-  const inputClass = `w-full px-3 py-2 bg-slate-100 border border-slate-300
-    rounded-lg text-sm text-slate-900 placeholder-slate-400
-    focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/30/50`
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 max-w-sm mx-auto">
@@ -59,11 +52,7 @@ export default function DocumentForm({ onComplete }) {
       </header>
 
       <div>
-<<<<<<< HEAD
         <label className={labelClass}>Document Type</label>
-=======
-        <label className="block text-xs text-slate-500 mb-1">Document Type</label>
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
         <select name="document_type" value={form.document_type}
           onChange={handleChange} className={inputClass}>
           <option value="passport">Passport</option>
@@ -73,73 +62,45 @@ export default function DocumentForm({ onComplete }) {
       </div>
 
       <div>
-<<<<<<< HEAD
         <label className={labelClass}>Document Number</label>
-=======
-        <label className="block text-xs text-slate-500 mb-1">Document Number</label>
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
         <input name="document_number" value={form.document_number}
           onChange={handleChange} placeholder="P123456789" className={inputClass} required />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-<<<<<<< HEAD
           <label className={labelClass}>Surname</label>
-=======
-          <label className="block text-xs text-slate-500 mb-1">Surname</label>
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
           <input name="surname" value={form.surname}
             onChange={handleChange} placeholder="SMITH" className={inputClass} required />
         </div>
         <div>
-<<<<<<< HEAD
           <label className={labelClass}>Given Names</label>
-=======
-          <label className="block text-xs text-slate-500 mb-1">Given Names</label>
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
           <input name="given_names" value={form.given_names}
             onChange={handleChange} placeholder="JOHN" className={inputClass} required />
         </div>
       </div>
 
       <div>
-<<<<<<< HEAD
         <label className={labelClass}>Date of Birth</label>
-=======
-        <label className="block text-xs text-slate-500 mb-1">Date of Birth</label>
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
         <input type="date" name="dob" value={form.dob}
           onChange={handleChange} className={inputClass} required />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-<<<<<<< HEAD
           <label className={labelClass}>Nationality</label>
-=======
-          <label className="block text-xs text-slate-500 mb-1">Nationality</label>
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
           <input name="nationality_code" value={form.nationality_code}
             onChange={handleChange} placeholder="GB" maxLength={2} className={inputClass} required />
         </div>
         <div>
-<<<<<<< HEAD
           <label className={labelClass}>Issuing Country</label>
-=======
-          <label className="block text-xs text-slate-500 mb-1">Issuing Country</label>
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
           <input name="issuing_country" value={form.issuing_country}
             onChange={handleChange} placeholder="GB" maxLength={2} className={inputClass} required />
         </div>
       </div>
 
       <div>
-<<<<<<< HEAD
         <label className={labelClass}>Expiry Date</label>
-=======
-        <label className="block text-xs text-slate-500 mb-1">Expiry Date</label>
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
         <input type="date" name="expiry_date" value={form.expiry_date}
           onChange={handleChange} className={inputClass} required />
       </div>
@@ -151,13 +112,8 @@ export default function DocumentForm({ onComplete }) {
       )}
 
       <button type="submit" disabled={submitting}
-<<<<<<< HEAD
         className="w-full py-3 bg-aviation hover:bg-aviation/90 disabled:bg-gray-300
                    text-white rounded-xl font-bold text-sm transition-all shadow-md">
-=======
-        className="w-full py-2.5 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 disabled:bg-slate-100
-                   text-white rounded-xl font-medium transition-colors">
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
         {submitting ? 'Submitting...' : 'Submit Document'}
       </button>
 
@@ -168,10 +124,4 @@ export default function DocumentForm({ onComplete }) {
       </footer>
     </form>
   )
-<<<<<<< HEAD
 }
-=======
-}
-
-
->>>>>>> e44b1bcd2c85ab5743b7c33318a4717761529c2a
