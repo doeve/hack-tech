@@ -672,56 +672,6 @@ export default function MapPage() {
       .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))[0] || null
   }, [myFlights])
 
-  // Begin journey handler
-  const handleBeginJourney = useCallback((flight) => {
-    const pos = useStore.getState().position
-    const plan = planJourney(flight, pos, pois)
-    if (!plan.length) return
-    setJourneyPlan(plan, flight)
-    // Start navigating to first waypoint
-    const firstPoi = plan[0]
-    startNavigation(pos, firstPoi.poi_id || firstPoi.id)
-  }, [pois, setJourneyPlan, startNavigation])
-
-  // Arrival detection for journey mode
-  useEffect(() => {
-    if (!journeyPlan || !route) return
-    const currentDest = journeyPlan[journeyStepIndex]
-    if (!currentDest) return
-
-    const pos = useStore.getState().position
-    const dx = pos.x_m - (currentDest.x_m || 0)
-    const dy = pos.y_m - (currentDest.y_m || 0)
-    const dist = Math.sqrt(dx * dx + dy * dy)
-
-    if (dist < 8 && !journeyArrivalRef.current) {
-      journeyArrivalRef.current = true
-      vibrateForEvent('waypoint_arrival')
-      const nextIndex = journeyStepIndex + 1
-      if (nextIndex < journeyPlan.length) {
-        const nextPoi = journeyPlan[nextIndex]
-        announceWaypointArrival(currentDest.name || 'checkpoint', nextPoi.name)
-        // Advance to next step after brief pause
-        setTimeout(() => {
-          advanceJourneyStep()
-          setRoute(null)
-          const currentPos = useStore.getState().position
-          startNavigation(currentPos, nextPoi.poi_id || nextPoi.id)
-          journeyArrivalRef.current = false
-        }, 2500)
-      } else {
-        // Journey complete!
-        vibrateForEvent('journey_complete')
-        announceJourneyComplete(currentDest.name || currentDest.gate_number)
-        setTimeout(() => {
-          setRoute(null)
-          clearJourney()
-          journeyArrivalRef.current = false
-        }, 1000)
-      }
-    }
-  }, [position, journeyPlan, journeyStepIndex, route, advanceJourneyStep, clearJourney, setRoute, startNavigation, vibrateForEvent, announceWaypointArrival, announceJourneyComplete])
-
   // Start navigation after position is confirmed
   const startNavigation = useCallback(async (fromPos, destPoiId) => {
     if (!airport) return
@@ -780,6 +730,56 @@ export default function MapPage() {
       }
     }
   }, [airport, navGraph, pois, accessProfile, setRoute, setSession])
+
+  // Begin journey handler
+  const handleBeginJourney = useCallback((flight) => {
+    const pos = useStore.getState().position
+    const plan = planJourney(flight, pos, pois)
+    if (!plan.length) return
+    setJourneyPlan(plan, flight)
+    // Start navigating to first waypoint
+    const firstPoi = plan[0]
+    startNavigation(pos, firstPoi.poi_id || firstPoi.id)
+  }, [pois, setJourneyPlan, startNavigation])
+
+  // Arrival detection for journey mode
+  useEffect(() => {
+    if (!journeyPlan || !route) return
+    const currentDest = journeyPlan[journeyStepIndex]
+    if (!currentDest) return
+
+    const pos = useStore.getState().position
+    const dx = pos.x_m - (currentDest.x_m || 0)
+    const dy = pos.y_m - (currentDest.y_m || 0)
+    const dist = Math.sqrt(dx * dx + dy * dy)
+
+    if (dist < 8 && !journeyArrivalRef.current) {
+      journeyArrivalRef.current = true
+      vibrateForEvent('waypoint_arrival')
+      const nextIndex = journeyStepIndex + 1
+      if (nextIndex < journeyPlan.length) {
+        const nextPoi = journeyPlan[nextIndex]
+        announceWaypointArrival(currentDest.name || 'checkpoint', nextPoi.name)
+        // Advance to next step after brief pause
+        setTimeout(() => {
+          advanceJourneyStep()
+          setRoute(null)
+          const currentPos = useStore.getState().position
+          startNavigation(currentPos, nextPoi.poi_id || nextPoi.id)
+          journeyArrivalRef.current = false
+        }, 2500)
+      } else {
+        // Journey complete!
+        vibrateForEvent('journey_complete')
+        announceJourneyComplete(currentDest.name || currentDest.gate_number)
+        setTimeout(() => {
+          setRoute(null)
+          clearJourney()
+          journeyArrivalRef.current = false
+        }, 1000)
+      }
+    }
+  }, [position, journeyPlan, journeyStepIndex, route, advanceJourneyStep, clearJourney, setRoute, startNavigation, vibrateForEvent, announceWaypointArrival, announceJourneyComplete])
 
   // Navigate here on a POI — ask for position only if not yet confirmed this session
   const handleSelectDestination = useCallback((poiId) => {
