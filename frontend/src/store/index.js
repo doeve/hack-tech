@@ -52,6 +52,7 @@ export const useStore = create(
         haptics_enabled: true,
         haptic_intensity: 1.0,
         tts_enabled: false,
+        tts_speed: 1.0,
         ar_enabled: true,
         avoid_stairs: false,
       },

@@ -90,6 +90,7 @@ export default function ProfilePage() {
               </svg>
             }
             label="Haptic Feedback"
+            subtitle="Vibration cues for turns, arrivals & alerts"
             checked={accessProfile.haptics_enabled}
             onChange={() => handleToggle('haptics_enabled')}
           />
@@ -97,11 +98,11 @@ export default function ProfilePage() {
           {accessProfile.haptics_enabled && (
             <div className="pl-12 pr-2 pb-3">
               <div className="flex items-center justify-between text-[10px] text-slate-500 uppercase tracking-wider mb-1.5">
-                <span>Intensity</span>
+                <span>Light</span>
                 <span>Strong</span>
               </div>
               <input
-                type="range" min="0" max="2" step="0.1"
+                type="range" min="0.3" max="2" step="0.1"
                 value={accessProfile.haptic_intensity}
                 onChange={(e) => handleSlider('haptic_intensity', e.target.value)}
                 className="w-full accent-blue-500 h-1"
@@ -116,11 +117,26 @@ export default function ProfilePage() {
                   d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
               </svg>
             }
-            label="Text-to-Speech"
-            subtitle="Read flight status & gate info"
+            label="Voice Navigation"
+            subtitle="Speaks directions, arrivals & flight alerts"
             checked={accessProfile.tts_enabled}
             onChange={() => handleToggle('tts_enabled')}
           />
+
+          {accessProfile.tts_enabled && (
+            <div className="pl-12 pr-2 pb-3">
+              <div className="flex items-center justify-between text-[10px] text-slate-500 uppercase tracking-wider mb-1.5">
+                <span>Slow</span>
+                <span>Fast</span>
+              </div>
+              <input
+                type="range" min="0.5" max="2" step="0.1"
+                value={accessProfile.tts_speed || 1.0}
+                onChange={(e) => handleSlider('tts_speed', e.target.value)}
+                className="w-full accent-blue-500 h-1"
+              />
+            </div>
+          )}
         </div>
       </div>
 

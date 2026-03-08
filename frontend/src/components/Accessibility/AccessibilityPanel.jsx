@@ -61,12 +61,13 @@ export default function AccessibilityPanel({ onClose }) {
         <div className="p-4 space-y-4">
           <Toggle label="Haptic Feedback" checked={accessProfile.haptics_enabled}
             onChange={() => handleToggle('haptics_enabled')} />
+          <p className="text-[11px] text-slate-500 -mt-1 mb-1 pl-1">Vibration cues for turns, arrivals & alerts</p>
 
           {accessProfile.haptics_enabled && (
             <div className="pl-2">
               <label className="text-xs text-slate-400">Intensity</label>
               <input
-                type="range" min="0" max="2" step="0.1"
+                type="range" min="0.3" max="2" step="0.1"
                 value={accessProfile.haptic_intensity}
                 onChange={(e) => handleSlider('haptic_intensity', e.target.value)}
                 className="w-full accent-blue-500"
@@ -74,8 +75,21 @@ export default function AccessibilityPanel({ onClose }) {
             </div>
           )}
 
-          <Toggle label="Text-to-Speech" checked={accessProfile.tts_enabled}
+          <Toggle label="Voice Navigation" checked={accessProfile.tts_enabled}
             onChange={() => handleToggle('tts_enabled')} />
+          <p className="text-[11px] text-slate-500 -mt-1 mb-1 pl-1">Speaks directions, arrivals & flight alerts</p>
+
+          {accessProfile.tts_enabled && (
+            <div className="pl-2">
+              <label className="text-xs text-slate-400">Speech Speed</label>
+              <input
+                type="range" min="0.5" max="2" step="0.1"
+                value={accessProfile.tts_speed || 1.0}
+                onChange={(e) => handleSlider('tts_speed', e.target.value)}
+                className="w-full accent-blue-500"
+              />
+            </div>
+          )}
 
           <Toggle label="AR Navigation" checked={accessProfile.ar_enabled}
             onChange={() => handleToggle('ar_enabled')} />

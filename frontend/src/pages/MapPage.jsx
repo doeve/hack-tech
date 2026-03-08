@@ -7,6 +7,8 @@ import {
 } from '../api/client'
 import { useWebSocket } from '../hooks/useWebSocket'
 import { useIMU } from '../hooks/useIMU'
+import { useHapticController } from '../components/Accessibility/HapticController'
+import { useTTS } from '../components/Accessibility/TTSController'
 import FloorMap from '../components/Map/FloorMap'
 import InstructionBanner from '../components/Navigation/InstructionBanner'
 import FlightCTABanner from '../components/Navigation/FlightCTABanner'
@@ -517,6 +519,10 @@ export default function MapPage() {
   const [searchOpen, setSearchOpen] = useState(false)
   const { confirmPosition } = useWebSocket(session?.id)
 
+  // Accessibility hooks
+  const { vibrateForInstruction, vibrateForEvent } = useHapticController()
+  const { announceInstruction, announceWaypointArrival, announceJourneyComplete } = useTTS()
+
   // Navigation flow state
   const [pendingDest, setPendingDest] = useState(null)
   const [positionMode, setPositionMode] = useState(null) // 'modal' | null
@@ -529,6 +535,19 @@ export default function MapPage() {
   const { journeyPlan, journeyStepIndex, journeyFlight, setJourneyPlan, advanceJourneyStep, clearJourney } = useStore()
   const [myFlights, setMyFlights] = useState([])
   const journeyArrivalRef = useRef(false)
+
+  // ── Accessibility: announce navigation instructions on step change ──
+  const prevStepRef = useRef(-1)
+  const currentStepIndex = useStore((s) => s.currentStepIndex)
+  useEffect(() => {
+    if (!route?.instructions) return
+    if (currentStepIndex === prevStepRef.current) return
+    prevStepRef.current = currentStepIndex
+    const instruction = route.instructions[currentStepIndex]
+    if (!instruction) return
+    announceInstruction(instruction)
+    vibrateForInstruction(instruction.haptic_cue || instruction.instruction_type || 'continue_straight')
+  }, [currentStepIndex, route, announceInstruction, vibrateForInstruction])
 
   // Set default position to bottom-center of the SVG floor plan
   const floorSvgDims = useStore((s) => s.floorSvgDims)
@@ -677,19 +696,23 @@ export default function MapPage() {
 
     if (dist < 8 && !journeyArrivalRef.current) {
       journeyArrivalRef.current = true
+      vibrateForEvent('waypoint_arrival')
       const nextIndex = journeyStepIndex + 1
       if (nextIndex < journeyPlan.length) {
+        const nextPoi = journeyPlan[nextIndex]
+        announceWaypointArrival(currentDest.name || 'checkpoint', nextPoi.name)
         // Advance to next step after brief pause
         setTimeout(() => {
           advanceJourneyStep()
           setRoute(null)
-          const nextPoi = journeyPlan[nextIndex]
           const currentPos = useStore.getState().position
           startNavigation(currentPos, nextPoi.poi_id || nextPoi.id)
           journeyArrivalRef.current = false
-        }, 1500)
+        }, 2500)
       } else {
         // Journey complete!
+        vibrateForEvent('journey_complete')
+        announceJourneyComplete(currentDest.name || currentDest.gate_number)
         setTimeout(() => {
           setRoute(null)
           clearJourney()
@@ -697,7 +720,7 @@ export default function MapPage() {
         }, 1000)
       }
     }
-  }, [position, journeyPlan, journeyStepIndex, route, advanceJourneyStep, clearJourney, setRoute, startNavigation])
+  }, [position, journeyPlan, journeyStepIndex, route, advanceJourneyStep, clearJourney, setRoute, startNavigation, vibrateForEvent, announceWaypointArrival, announceJourneyComplete])
 
   // Start navigation after position is confirmed
   const startNavigation = useCallback(async (fromPos, destPoiId) => {
@@ -783,6 +806,7 @@ export default function MapPage() {
     setPositionConfirmed(true)
     stepAccumRef.current = 0 // reset drift on anchor
     confirmPosition(x_m, y_m)
+    vibrateForEvent('confirm')
     setSettingPosition(false)
     setPositionMode(null)
 

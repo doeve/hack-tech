@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { Html5Qrcode } from 'html5-qrcode'
 import { useStore } from '../store'
 import { getFlights, getMyFlights, subscribeFlight } from '../api/client'
+import { useHapticController } from '../components/Accessibility/HapticController'
+import { useTTS } from '../components/Accessibility/TTSController'
 import BottomNav from '../components/BottomNav'
 
 const STATUS_COLORS = {
@@ -13,7 +15,6 @@ const STATUS_COLORS = {
   scheduled: 'bg-green-500/20 text-green-400',
   cancelled: 'bg-red-500/20 text-red-400',
   landed: 'bg-slate-500/20 text-slate-400',
-  gate_closed: 'bg-orange-500/20 text-orange-400',
   departed: 'bg-cyan-500/20 text-cyan-400',
 }
 
@@ -40,6 +41,10 @@ export default function FlightsPage() {
   const [showScanner, setShowScanner] = useState(false)
   const [scanResult, setScanResult] = useState(null)
 
+  const { vibrateForEvent } = useHapticController()
+  const { announceFlightStatus } = useTTS()
+  const prevStatusesRef = useRef({})
+
   useEffect(() => {
     let cancelled = false
     const load = async () => {
@@ -65,6 +70,19 @@ export default function FlightsPage() {
     const interval = setInterval(load, 5000)
     return () => { cancelled = true; clearInterval(interval) }
   }, [direction, accessToken])
+
+  // Detect status changes on user's flights and announce them
+  useEffect(() => {
+    if (!myFlights.length) return
+    for (const f of myFlights) {
+      const prev = prevStatusesRef.current[f.id]
+      if (prev && prev !== f.status) {
+        vibrateForEvent('status_change')
+        announceFlightStatus(f.flight_number, f.status)
+      }
+      prevStatusesRef.current[f.id] = f.status
+    }
+  }, [myFlights, vibrateForEvent, announceFlightStatus])
 
   const handleScanSuccess = async (flightData) => {
     try {

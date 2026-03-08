@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useHapticController } from '../Accessibility/HapticController'
+import { useTTS } from '../Accessibility/TTSController'
 
 function formatCountdown(ms) {
   if (ms <= 0) return 'now'
@@ -9,6 +11,15 @@ function formatCountdown(ms) {
   return m > 0 ? `${m}m ${s}s` : `${s}s`
 }
 
+function formatCountdownSpoken(ms) {
+  if (ms <= 0) return 'now'
+  const h = Math.floor(ms / 3600000)
+  const m = Math.floor((ms % 3600000) / 60000)
+  if (h > 0 && m > 0) return `${h} hour${h > 1 ? 's' : ''} and ${m} minute${m > 1 ? 's' : ''}`
+  if (h > 0) return `${h} hour${h > 1 ? 's' : ''}`
+  return `${m} minute${m > 1 ? 's' : ''}`
+}
+
 export default function FlightCTABanner({ flight, onConfirm }) {
   const [countdown, setCountdown] = useState('')
   const [sliderX, setSliderX] = useState(0)
@@ -16,6 +27,10 @@ export default function FlightCTABanner({ flight, onConfirm }) {
   const [confirmed, setConfirmed] = useState(false)
   const trackRef = useRef(null)
   const thumbSize = 52
+  const announcedRef = useRef(false)
+
+  const { vibrateForEvent } = useHapticController()
+  const { announceFlightApproaching } = useTTS()
 
   // Countdown timer
   useEffect(() => {
@@ -27,6 +42,18 @@ export default function FlightCTABanner({ flight, onConfirm }) {
     const interval = setInterval(update, 1000)
     return () => clearInterval(interval)
   }, [flight])
+
+  // Announce flight on mount (once) for blind users + vibrate for deaf users
+  useEffect(() => {
+    if (announcedRef.current) return
+    announcedRef.current = true
+    vibrateForEvent('flight_alert')
+    const depTime = new Date(flight.estimated_at || flight.scheduled_at).getTime()
+    const ms = depTime - Date.now()
+    if (ms > 0) {
+      announceFlightApproaching(flight, formatCountdownSpoken(ms))
+    }
+  }, [flight, vibrateForEvent, announceFlightApproaching])
 
   // Slide interaction
   const getMaxX = useCallback(() => {
@@ -58,12 +85,13 @@ export default function FlightCTABanner({ flight, onConfirm }) {
       // Confirmed!
       setSliderX(maxX)
       setConfirmed(true)
+      vibrateForEvent('confirm')
       setTimeout(() => onConfirm(flight), 600)
     } else {
       // Spring back
       setSliderX(0)
     }
-  }, [dragging, sliderX, getMaxX, onConfirm, flight])
+  }, [dragging, sliderX, getMaxX, onConfirm, flight, vibrateForEvent])
 
   const maxX = getMaxX()
   const progress = maxX > 0 ? sliderX / maxX : 0
