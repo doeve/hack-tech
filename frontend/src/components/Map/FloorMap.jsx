@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { MapContainer, ImageOverlay, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { useStore } from '../../store'
@@ -10,14 +10,28 @@ import POIMarkers from './POIMarkers'
 // CRS.Simple: [y, x] = [lat, lng]. We work in metres directly.
 // Bounds: [[0,0], [height_m, width_m]] so y_m maps to lat and x_m maps to lng.
 
-function MapController({ airport }) {
+function MapController({ airport, imageBounds }) {
   const map = useMap()
+  const didInit = useRef(false)
 
   useEffect(() => {
-    if (!airport) return
-    const bounds = [[0, 0], [airport.height_m, airport.width_m]]
-    map.fitBounds(bounds)
-  }, [airport, map])
+    if (!airport || didInit.current) return
+    didInit.current = true
+
+    // Fit the SVG image (or airport bounds) to screen height, centered on user position
+    const pos = useStore.getState().position
+    const posConfirmed = useStore.getState().positionConfirmed
+
+    // Use image bounds if available, otherwise airport bounds
+    const fitBounds = imageBounds || [[0, 0], [airport.height_m, airport.width_m]]
+    map.fitBounds(fitBounds)
+
+    // If user position is confirmed, center on them at the fitted zoom
+    if (posConfirmed) {
+      const zoom = map.getZoom()
+      map.setView([pos.y_m, pos.x_m], zoom, { animate: false })
+    }
+  }, [airport, imageBounds, map])
 
   return null
 }
@@ -38,13 +52,13 @@ function MapClickHandler({ onMapClick }) {
 
 function ZoomToUser({ trigger }) {
   const map = useMap()
-  const { position } = useStore()
 
   useEffect(() => {
     if (!trigger) return
-    const latlng = [position.y_m, position.x_m]
-    map.flyTo(latlng, 2, { duration: 0.5 })
-  }, [trigger, map, position])
+    const pos = useStore.getState().position
+    const latlng = [pos.y_m, pos.x_m]
+    map.flyTo(latlng, map.getZoom(), { duration: 0.5 })
+  }, [trigger, map])
 
   return null
 }
@@ -109,12 +123,12 @@ export default function FloorMap({ onMapClick, onSelectDestination, clientRoute,
       zoomSnap={0.25}
       zoomDelta={0.5}
       minZoom={-2}
-      maxZoom={4}
+      maxZoom={8}
       attributionControl={false}
       style={{ width: '100%', height: '100%', background: '#0b1120' }}
     >
       <ImageOverlay url={floorPlanUrl} bounds={imageBounds} opacity={0.9} />
-      <MapController airport={airport} />
+      <MapController airport={airport} imageBounds={imageBounds} />
       <MapClickHandler onMapClick={onMapClick} />
       <ZoomToUser trigger={zoomToUserTrigger} />
       {mapRef && <MapRefExposer mapRef={mapRef} />}
