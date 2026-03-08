@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import ARView from '../components/AR/ARView'
 
 export default function ARPage() {
@@ -10,3 +10,5 @@ export default function ARPage() {
     </div>
   )
 }
+
+

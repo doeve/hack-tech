@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+﻿import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
 /**
@@ -70,3 +70,5 @@ export default function XRScene({ onSceneReady, children }) {
     </div>
   )
 }
+
+

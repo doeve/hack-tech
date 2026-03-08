@@ -1,4 +1,4 @@
-import { useStore } from '../../store'
+﻿import { useStore } from '../../store'
 import { DemoCard } from './DemoShared'
 
 export default function DemoRouteCard() {
@@ -14,10 +14,10 @@ export default function DemoRouteCard() {
             key={i}
             className={`flex items-center gap-2 text-xs p-1.5 rounded ${
               i === currentStepIndex
-                ? 'bg-blue-500/20 text-blue-300'
+                ? 'bg-[#1e3a8a]/20 text-blue-300'
                 : i < currentStepIndex
                 ? 'text-slate-500 line-through'
-                : 'text-slate-300'
+                : 'text-slate-500'
             }`}
           >
             <span className="w-5 text-right font-mono text-slate-500">
@@ -31,3 +31,5 @@ export default function DemoRouteCard() {
     </DemoCard>
   )
 }
+
+

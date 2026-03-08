@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+﻿import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { useStore } from '../../store'
 import InstructionBanner from '../Navigation/InstructionBanner'
@@ -172,7 +172,7 @@ export default function ARView({ onExit }) {
   }, [])
 
   return (
-    <div className="relative w-full h-full bg-black">
+    <div className="relative w-full h-full bg-slate-900">
       {/* Video feed for fallback mode */}
       <video
         ref={videoRef}
@@ -199,7 +199,7 @@ export default function ARView({ onExit }) {
           if (onExit) onExit()
         }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20
-                   bg-white/20 backdrop-blur-sm text-white px-6 py-3
+                   bg-white/20 backdrop-blur-sm text-slate-900 px-6 py-3
                    rounded-full pointer-events-auto border border-white/20
                    hover:bg-white/30 transition-colors"
       >
@@ -208,3 +208,5 @@ export default function ARView({ onExit }) {
     </div>
   )
 }
+
+

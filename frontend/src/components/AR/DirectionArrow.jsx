@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+﻿import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
 /**
@@ -82,3 +82,5 @@ export default function DirectionArrow({ scene, bearing, heading, distance, turn
 
   return null
 }
+
+

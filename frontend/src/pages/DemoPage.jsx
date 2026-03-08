@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+﻿import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
 import {
@@ -87,21 +87,21 @@ export default function DemoPage() {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-slate-900">
-        <div className="animate-spin w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full" />
+      <div className="h-full flex items-center justify-center bg-white">
+        <div className="animate-spin w-8 h-8 border-2 border-[#1e3a8a] border-t-transparent rounded-full" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-full bg-slate-900 p-4 pb-20">
+    <div className="min-h-full bg-white p-4 pb-20">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/map')} className="text-slate-400 hover:text-white p-1">
+        <button onClick={() => navigate('/map')} className="text-slate-500 hover:text-slate-900 p-1">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-lg font-semibold text-white">Demo Control Panel</h1>
+        <h1 className="text-lg font-semibold text-slate-900">Demo Control Panel</h1>
       </div>
       <div className="max-w-lg mx-auto space-y-4">
         <DemoCard title="Airport">
@@ -122,3 +122,5 @@ export default function DemoPage() {
     </div>
   )
 }
+
+

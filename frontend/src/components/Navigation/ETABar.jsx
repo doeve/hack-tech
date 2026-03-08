@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+﻿import { useMemo } from 'react'
 import { useStore } from '../../store'
 
 export default function ETABar() {
@@ -41,10 +41,10 @@ export default function ETABar() {
   }
 
   return (
-    <div className="bg-slate-800/95 backdrop-blur-sm rounded-xl px-4 py-2
-                    border border-slate-700/50 shadow-xl">
+    <div className="bg-white backdrop-blur-sm rounded-xl px-4 py-2
+                    border border-slate-200 shadow-xl">
       {/* Progress bar */}
-      <div className="w-full h-1.5 bg-slate-700 rounded-full mb-2 overflow-hidden">
+      <div className="w-full h-1.5 bg-slate-100 rounded-full mb-2 overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full
                      transition-all duration-500 ease-out"
@@ -54,18 +54,18 @@ export default function ETABar() {
 
       <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-3">
-          <span className="text-slate-400">
-            <span className="text-white font-medium">
+          <span className="text-slate-500">
+            <span className="text-slate-900 font-medium">
               {Math.round(stats.remainingDistance)}m
             </span> remaining
           </span>
         </div>
-        <div className="flex items-center gap-1 text-slate-400">
+        <div className="flex items-center gap-1 text-slate-500">
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span className="text-white font-medium">
+          <span className="text-slate-900 font-medium">
             {formatTime(stats.remainingTime)}
           </span>
         </div>
@@ -76,3 +76,5 @@ export default function ETABar() {
     </div>
   )
 }
+
+
