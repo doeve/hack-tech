@@ -86,10 +86,28 @@ export default function FlightsPage() {
 
   const handleScanSuccess = async (flightData) => {
     try {
-      await subscribeFlight(flightData.flight_id)
+      let flightId = flightData.flight_id
+      let flightLabel = flightData.flight_number || flightData.flight_id
+
+      // Manual entry by flight number — resolve to a real flight id
+      if (!flightId && flightData.flight_number) {
+        const needle = flightData.flight_number.trim().toLowerCase().replace(/\s+/g, '')
+        const match = apiFlights.find(
+          (f) => f.flight_number?.toLowerCase().replace(/\s+/g, '') === needle
+        )
+        if (!match) {
+          setScanResult({ ok: false, message: `Flight ${flightData.flight_number} not found` })
+          setShowScanner(false)
+          return
+        }
+        flightId = match.id
+        flightLabel = match.flight_number
+      }
+
+      await subscribeFlight(flightId)
       const { data } = await getMyFlights()
       setMyFlights(data || [])
-      setScanResult({ ok: true, flight: flightData.flight_number || flightData.flight_id })
+      setScanResult({ ok: true, flight: flightLabel })
     } catch (err) {
       console.error('subscribeFlight failed:', err)
       setScanResult({ ok: false, message: 'Failed to add flight' })
@@ -250,6 +268,7 @@ export default function FlightsPage() {
         <TicketScannerModal
           onScan={handleScanSuccess}
           onClose={() => setShowScanner(false)}
+          flights={apiFlights}
         />
       )}
 
@@ -271,14 +290,34 @@ function parseTicketQR(text) {
   return null
 }
 
-function TicketScannerModal({ onScan, onClose }) {
+function TicketScannerModal({ onScan, onClose, flights = [] }) {
   const onScanRef = useRef(onScan)
   onScanRef.current = onScan
   const [error, setError] = useState(null)
   const [scanStatus, setScanStatus] = useState(null)
   const [pastedImg, setPastedImg] = useState(null)
+  const [manualInput, setManualInput] = useState('')
+  const [manualError, setManualError] = useState(null)
   const containerRef = useRef(null)
   const scannerRef = useRef(null)
+
+  const submitManual = () => {
+    const value = manualInput.trim()
+    if (!value) {
+      setManualError('Enter a flight number')
+      return
+    }
+    setManualError(null)
+    try { scannerRef.current?.stop() } catch {}
+    onScanRef.current({ flight_number: value, type: 'skyguide_ticket' })
+  }
+
+  const normalized = manualInput.trim().toLowerCase().replace(/\s+/g, '')
+  const suggestions = normalized.length >= 1
+    ? flights
+        .filter((f) => f.flight_number?.toLowerCase().replace(/\s+/g, '').includes(normalized))
+        .slice(0, 4)
+    : []
 
   // Clipboard paste: decode QR from pasted image
   useEffect(() => {
@@ -402,6 +441,58 @@ function TicketScannerModal({ onScan, onClose }) {
         {error && (
           <p className="text-red-400 text-sm text-center">{error}</p>
         )}
+
+        <div className="flex items-center gap-3 my-4">
+          <div className="flex-1 h-px bg-slate-700/60" />
+          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">or enter manually</span>
+          <div className="flex-1 h-px bg-slate-700/60" />
+        </div>
+
+        <div className="relative">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={manualInput}
+              onChange={(e) => { setManualInput(e.target.value.toUpperCase()); setManualError(null) }}
+              onKeyDown={(e) => { if (e.key === 'Enter') submitManual() }}
+              placeholder="Flight number (e.g. UA123)"
+              autoFocus
+              className="flex-1 px-3 py-2.5 bg-slate-900/80 border border-slate-700/60
+                         rounded-xl text-sm text-white placeholder-slate-500
+                         focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50"
+            />
+            <button
+              onClick={submitManual}
+              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl transition-colors"
+            >
+              Add
+            </button>
+          </div>
+
+          {suggestions.length > 0 && (
+            <div className="absolute left-0 right-0 mt-1 bg-slate-900 border border-slate-700/60 rounded-xl overflow-hidden shadow-lg z-10">
+              {suggestions.map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => {
+                    try { scannerRef.current?.stop() } catch {}
+                    onScanRef.current({ flight_id: f.id, flight_number: f.flight_number, type: 'skyguide_ticket' })
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 hover:bg-slate-800 transition-colors text-left"
+                >
+                  <span className="text-sm text-white font-medium">{f.flight_number}</span>
+                  <span className="text-xs text-slate-500">
+                    {f.origin_code || '--'} → {f.destination_code || '--'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {manualError && (
+            <p className="text-red-400 text-xs mt-2">{manualError}</p>
+          )}
+        </div>
       </div>
     </div>
   )
